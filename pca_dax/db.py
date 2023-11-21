@@ -29,6 +29,11 @@ def close_db(e=None):
 
 
 def create_connection(db='instance/pca_project.sqlite'):
+    """
+    Creates connection to sqlite database
+    :param db: path to db instance
+    :return:
+    """
     conn = None
 
     try:
@@ -40,6 +45,13 @@ def create_connection(db='instance/pca_project.sqlite'):
 
 
 def insert_stocks_into_db(row, conn, cursor):
+    """
+    Inserts stocks data into database in a given format
+    :param row: row instance of pd.DataFrame
+    :param conn: sqlite's connection to a database
+    :param cursor: connection's cursor
+    :return:
+    """
     try:
         cursor.execute(
             """INSERT INTO stocks (symbol, date, open, high, low, close, adj_close, volume)
@@ -52,6 +64,13 @@ def insert_stocks_into_db(row, conn, cursor):
 
 
 def insert_info_into_db(row, conn, cursor):
+    """
+        Inserts info data into database in a given format
+        :param row: row instance of pd.DataFrame
+        :param conn: sqlite's connection to a database
+        :param cursor: connection's cursor
+        :return:
+    """
     try:
         cursor.execute(
             """INSERT INTO companies (symbol, name, exchange, industry, sector, market_cap, book_value, beta)
@@ -64,6 +83,10 @@ def insert_info_into_db(row, conn, cursor):
 
 
 def init_db():
+    """
+    Gets the database connection and runs an .sql database initiation script
+    :return:
+    """
     db = get_db()
 
     with current_app.open_resource('schema.sql') as f:
@@ -71,6 +94,7 @@ def init_db():
 
 
 def populate_stocks():
+    """Populates the stocks table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
 
@@ -85,6 +109,7 @@ def populate_stocks():
 
 
 def populate_info():
+    """Populates the info table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
 
@@ -136,6 +161,7 @@ def populate_info():
 
 
 def update_db():
+    """Gets the latest date from the stocks table, fills in the missing dates"""
     with create_connection() as conn:
         c = conn.cursor()
 
@@ -159,6 +185,7 @@ def update_db():
             conn.commit()
 
 
+# CLI commands initiation
 @click.command('init-db')
 def init_db_command():
     init_db()

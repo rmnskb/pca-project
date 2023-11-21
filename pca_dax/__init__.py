@@ -43,6 +43,7 @@ def register_dashapps(app):
         __name__
         , server=app
         , url_base_pathname='/dash/'
+        , external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
     )
 
     with app.app_context():

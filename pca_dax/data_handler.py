@@ -52,7 +52,7 @@ class DataHandler:
 
         return self._tickers
 
-    def fetch_stocks_from_api(self):
+    def fetch_stocks_from_api(self) -> pd.DataFrame:
         """
         Fetches the data from Yahoo! Finance publicly available API for given tickers and date range
         :return: a pandas dataframe with given tickers and in long format
@@ -63,11 +63,12 @@ class DataHandler:
             , end=self._end_date
         )
 
+        # removes the multiindex and move the symbols to a separate column
         self._data = df.stack().reset_index(names=['Date', 'Symbol'])
 
         return self._data
 
-    def fetch_info_from_api(self):
+    def fetch_info_from_api(self) -> pd.DataFrame:
         """
         Fetches the info data from Yahoo! Finance publicly available API for given tickers
         :return: a pandas dataframe with given tickers' info
@@ -98,6 +99,7 @@ class DataHandler:
         if self._end_date is None or self._end_date.strftime(date_format) > datetime.today():
             self._end_date = datetime.today().strftime(date_format)
 
+        # creates connection and reads stocks data with function arguments
         with db.create_connection() as conn:
             self._data = pd.read_sql(
                 f"""
@@ -118,20 +120,20 @@ class DataHandler:
 
         return self._data
 
-    def fetch_info_from_db(self):
+    def fetch_info_from_db(self) -> pd.DataFrame:
         with db.create_connection() as conn:
             self._companies_info = pd.read_sql(
                 f"""
                     SELECT *
                     FROM companies
-                    WHERE symbol IN {tuple(self.get_tickers())}
+                    WHERE symbol IN {tuple(self.get_tickers())} AND sector IS NOT NULL
                 """
                 , con=conn
             )
 
         return self._companies_info
 
-    def preprocess(self):
+    def preprocess(self) -> pd.DataFrame:
         """
         Initialises the index as a datetime object,
         drops any stocks that have more than 1% of whole time window missing,
@@ -157,7 +159,11 @@ class DataHandler:
 
         return self._data
 
-    def create_daily_change(self):
+    def create_daily_change(self) -> pd.DataFrame:
+        """
+        Creates return series from wide stocks data (please choose one price type)
+        :return: a dataframe with returns for given price type
+        """
         self.preprocess()
 
         self._dly_chg = self._data.pct_change(1)
@@ -165,7 +171,11 @@ class DataHandler:
 
         return self._dly_chg
 
-    def create_monthly_change(self):
+    def create_monthly_change(self) -> pd.DataFrame:
+        """
+        Converts daily returns to monthly returns
+        :return:
+        """
         if self._dly_chg.empty:
             _dly_chg = self.create_daily_change()
         else:
