@@ -37,6 +37,7 @@ def get_layout():
                 , end_date=datetime.today().strftime(date_format)
             )
         ])
+
         , html.Div(id='first_row', children=[
             html.Div(id='first-graph', children=[
                 dcc.Dropdown(
@@ -49,6 +50,7 @@ def get_layout():
                     id='stocks-linechart'
                 )
             ], className='six columns')
+
             , html.Div(id='second-graph', children=[
                 dcc.Dropdown(
                     id='sectors-dropdown'
@@ -61,6 +63,33 @@ def get_layout():
                 )
             ], className='six columns')
         ], className='row')
+
+        # TODO: fix the scatterplot
+        , html.Div(id='second-row', children=[
+            html.Div(id='radio-filter', children=[
+                dcc.RadioItems(
+                    options=['Daily', 'Monthly']
+                    , value='Daily'
+                    , id='daily-monthly-type'
+                    , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
+                )
+            ], style={
+                'width': '49%', 'float': 'right'
+                , 'display': 'inline-block', 'padding': '10px 5px'
+            })
+
+            , html.Div([
+                 dcc.Graph(
+                    id='mean-vol-scatterplot'
+                    , hoverData={'points': [{'customdata': 'SAP.DE'}]}
+                )
+            ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'})
+
+            # , html.Div([
+            #     dcc.Graph(id='daily-ts')
+            #     , dcc.Graph(id='daily-rts')
+            # ], style={'display': 'inline-block', 'width': '49%'})
+        ])
     ])
 
     return layout

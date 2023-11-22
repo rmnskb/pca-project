@@ -15,6 +15,7 @@ date_format = '%Y-%m-%d'
 
 class DataHandler:
     def __init__(self, tickers=None, start_date=FIRST_DATE, end_date=None):
+        # Variables initiation
         self._tickers = tickers
         self._start_date = start_date
         self._end_date = end_date
@@ -22,7 +23,7 @@ class DataHandler:
         self._dly_chg = pd.DataFrame({})
         self._mth_chg = pd.DataFrame({})
         self._companies_info = pd.DataFrame({})
-        # self._session = LimiterSession(per_second=1)
+        self._mean_std = pd.DataFrame({})
 
     def get_tickers(self):
         """
@@ -94,7 +95,7 @@ class DataHandler:
 
         return self._companies_info
 
-    def fetch_stocks_from_db(self, price_type: str ='adj_close', format:str = 'wide') -> pd.DataFrame:
+    def fetch_stocks_from_db(self, price_type: str ='adj_close', wide_format: bool = True) -> pd.DataFrame:
         # sets today's date if the end date is missing or if it is in the future
         if self._end_date is None or self._end_date.strftime(date_format) > datetime.today():
             self._end_date = datetime.today().strftime(date_format)
@@ -113,7 +114,7 @@ class DataHandler:
                 , index_col='date'
             )
 
-        if format == 'wide':
+        if wide_format:
             self._data = (self._data
                           .pivot_table(index='date', values=f'{price_type}', columns='symbol')
                           .rename_axis(columns=None))
@@ -149,7 +150,7 @@ class DataHandler:
         if isinstance(self._data, pd.DataFrame):
             self._data = self._data.dropna(
                 axis=1
-                , thresh=int(0.99*len(self._data))
+                , thresh=int(0.9*len(self._data))
             )
         elif isinstance(self._data, pd.Series):
             self._data = self._data.dropna()
@@ -185,5 +186,24 @@ class DataHandler:
 
         return self._mth_chg
 
+    def create_mean_var_df(self, daily_freq: bool = True) -> pd.DataFrame:
+        if daily_freq:
+            rts = self.create_daily_change()
+        else:
+            rts = self.create_monthly_change()
 
+        stds = rts.std()
+        means = rts.mean()
 
+        self._mean_std = (pd.DataFrame(
+                data={'mean': means, 'vol': stds}
+                , columns=['mean', 'vol']
+            ).reset_index()
+            .merge(
+                self.fetch_info_from_db()[['symbol', 'sector']]
+                , left_on='index'
+                , right_on='symbol'
+            )[['symbol', 'mean', 'vol', 'sector']]
+        )
+
+        return self._mean_std

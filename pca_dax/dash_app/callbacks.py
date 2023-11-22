@@ -26,7 +26,7 @@ def register_callbacks(dashapp):
         start_date=FIRST_DATE
     )
     data = data_instance.fetch_stocks_from_db(
-        format='long'
+        wide_format=False
         , price_type='open, high, low, close, adj_close'
     )
     info_data = data_instance.fetch_info_from_db()[['symbol', 'sector']]
@@ -97,3 +97,90 @@ def register_callbacks(dashapp):
         )
 
         return fig
+
+    @dashapp.callback(
+        Output('mean-vol-scatterplot', 'figure')
+        , Input('daily-monthly-type', 'value')
+        # , Input('date-picker-range', 'start_date')
+        # , Input('date-picker-range', 'end_date')
+    )
+    def update_scatter_graph(daily_value):
+        daily_mask = (daily_value == 'Daily')
+        mean_var = data_instance.create_mean_var_df()
+
+        fig = px.scatter(
+            x=mean_var['vol']
+            , y=mean_var['mean']
+            , color=mean_var['sector']
+            , hover_name=mean_var['symbol']
+        )
+
+        fig.update_traces(customdata=mean_var['symbol'])
+        fig.update_layout(margin={'l': 40, 'b': 40, 't': 40, 'r': 40})
+
+        return fig
+
+    def create_ts(df, title):
+        fig = px.scatter(
+            df
+            , x='date'
+            , y='value'
+        )
+
+        fig.update_traces(mode='lines+markers')
+
+        fig.update_xaxes(showgrid=False)
+
+        fig.add_annotation(x=0, y=0.85
+                           , xanchor='left'
+                           , yanchor='bottom'
+                           , xref='paper'
+                           , yref='paper'
+                           , showarrow=False
+                           , align='left'
+                           , text=title)
+
+        fig.update_layout(
+            height=225
+            , margin={'l': 20, 'b': 30, 'r': 10, 't': 10}
+        )
+
+        return fig
+
+    # @callback(
+    #     Output('daily-ts', 'figure')
+    #     , Input('mean-vol-scatterplot', 'hoverData')
+    # )
+    # def update_ts(hoverData):
+    #     symbol = hoverData['points'][0]['customdata']
+    #
+    #     ts = (
+    #         data[data['symbol'] == symbol][['date', 'adj_close']]
+    #         .rename(columns={'adj_close': 'value'})
+    #     )
+    #
+    #     title = symbol + f' Daily Time Series'
+    #
+    #     return create_ts(ts, title)
+
+    # @callback(
+    #     Output('daily-rts', 'figure')
+    #     , Input('mean-vol-scatterplot', 'hoverData')
+    #     , Input('daily-monthly-type', 'value')
+    # )
+    # def update_rts(hoverData, daily_value):
+    #     symbol = hoverData['points'][0]['customdata']
+    #     if daily_value == 'Daily':
+    #         rts = data_instance.create_daily_change()[symbol]
+    #     else:  # daily_value == 'Montly'
+    #         rts = data_instance.create_monthly_change()[symbol]
+    #
+    #     ts = (
+    #         rts
+    #         .rename(columns={symbol: 'value'})
+    #         .reset_index()
+    #     )
+    #
+    #     title = symbol + f' {daily_value} Change Time Series'
+    #
+    #     return create_ts(ts, title)
