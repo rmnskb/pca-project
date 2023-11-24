@@ -95,9 +95,9 @@ class DataHandler:
 
         return self._companies_info
 
-    def fetch_stocks_from_db(self, price_type: str ='adj_close', wide_format: bool = True) -> pd.DataFrame:
+    def fetch_stocks_from_db(self, price_type: str = 'adj_close', wide_format: bool = True) -> pd.DataFrame:
         # sets today's date if the end date is missing or if it is in the future
-        if self._end_date is None or self._end_date.strftime(date_format) > datetime.today():
+        if self._end_date is None or datetime.strptime(self._end_date, date_format) > datetime.today():
             self._end_date = datetime.today().strftime(date_format)
 
         # creates connection and reads stocks data with function arguments
@@ -142,33 +142,38 @@ class DataHandler:
 
         :return: Returns a preprocessed pd.DataFrame object
         """
-        if self._data.empty:
-            self.fetch_stocks_from_db()
 
-        self._data.index = pd.to_datetime(self._data.index)
+        data = self.fetch_stocks_from_db(price_type='adj_close', wide_format=True)
 
-        if isinstance(self._data, pd.DataFrame):
-            self._data = self._data.dropna(
+        data.index = pd.to_datetime(data.index)
+
+        if isinstance(data, pd.DataFrame):
+            data = data.dropna(
                 axis=1
-                , thresh=int(0.9*len(self._data))
+                , thresh=int(0.9*len(data))
             )
-        elif isinstance(self._data, pd.Series):
-            self._data = self._data.dropna()
+        elif isinstance(data, pd.Series):
+            data = data.dropna()
 
-        if self._data.isna().any().any():
-            self._data = self._data.fillna(method='ffill')
+        if data.isna().any().any():
+            data = data.ffill()
 
-        return self._data
+        return data
 
     def create_daily_change(self) -> pd.DataFrame:
         """
         Creates return series from wide stocks data (please choose one price type)
         :return: a dataframe with returns for given price type
         """
-        self.preprocess()
-
-        self._dly_chg = self._data.pct_change(1)
-        self._dly_chg = self._dly_chg.dropna()
+        data = self.preprocess()
+        # if (data.dtypes == float).all():
+        # if data.select_dtypes(exclude=['int64', 'float64']).columns.empty:
+        dly_chg = data.pct_change(1)
+        self._dly_chg = dly_chg.dropna()
+        # else:
+            # non_num_cols = data.select_dtypes(exclude=['int64', 'float64']).columns
+            # raise TypeError(f'Trying to calculate changes with non-numeric values: {non_num_cols}')
+            # raise TypeError(f'Columns: {data.columns}')
 
         return self._dly_chg
 

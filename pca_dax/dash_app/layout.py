@@ -85,10 +85,10 @@ def get_layout():
                 )
             ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'})
 
-            # , html.Div([
-            #     dcc.Graph(id='daily-ts')
-            #     , dcc.Graph(id='daily-rts')
-            # ], style={'display': 'inline-block', 'width': '49%'})
+            , html.Div([
+                dcc.Graph(id='daily-ts')
+                , dcc.Graph(id='daily-rts')
+            ], style={'display': 'inline-block', 'width': '49%'})
         ])
     ])
 
