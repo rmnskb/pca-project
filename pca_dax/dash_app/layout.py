@@ -19,25 +19,31 @@ def get_layout():
     tickers = data.get_tickers()
     sectors = data.fetch_info_from_db()['sector'].unique().tolist()
 
+    navbar = dbc.NavbarSimple(children=[
+        # TODO: add navbar
+    ])
+
     layout = dbc.Container([
         dbc.Row([
-            html.Div(id='title', children=[
-                html.H1(
-                    id='header'
-                    , children='Dashboard'
-                    , style={
-                        'textAlign': 'center'
-                    }
-                )
+            dbc.Col([
+                html.Div(id='title', children=[
+                    html.H1(
+                        id='header'
+                        , children='Dashboard'
+                        , style={
+                            'textAlign': 'center'
+                        }
+                    )
 
-                , dcc.DatePickerRange(
-                    id='date-picker-range'
-                    , min_date_allowed=FIRST_DATE
-                    , max_date_allowed=datetime.today().strftime(date_format)
-                    # , initial_visible_date=date(date.today().year, 1, 1)
-                    , start_date=FIRST_DATE
-                    , end_date=datetime.today().strftime(date_format)
-                )
+                    , dcc.DatePickerRange(
+                        id='date-picker-range'
+                        , min_date_allowed=FIRST_DATE
+                        , max_date_allowed=datetime.today().strftime(date_format)
+                        # , initial_visible_date=date(date.today().year, 1, 1)
+                        , start_date=FIRST_DATE
+                        , end_date=datetime.today().strftime(date_format)
+                    )
+                ])
             ])
         ])
 
@@ -55,7 +61,7 @@ def get_layout():
                         id='stocks-linechart'
                     )
                 ])
-            ])
+            ], width={'size': 6})
 
             , dbc.Col([
                 html.Div(id='second-graph', children=[
@@ -71,7 +77,7 @@ def get_layout():
                         id='sectors-linechart'
                     )
                 ])
-            ])
+            ], width={'size': 5, 'offset': 1})
         ])
 
         , dbc.Row([
@@ -81,7 +87,8 @@ def get_layout():
                         options=['Daily', 'Monthly']
                         , value='Monthly'
                         , id='daily-monthly-type'
-                        , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
+                        # , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
+                        , labelClassName='mr-2'
                     )
 
                     , dcc.Graph(
@@ -89,42 +96,46 @@ def get_layout():
                         , hoverData={'points': [{'hovertext': 'SAP.DE'}]}
                     )
                 ])
-            ])
+            ], width={'size': 7})
 
             , dbc.Col([
                 dbc.Row([
-                    dcc.Graph(id='daily-ts')
-                ])
+                    dbc.Col([
+                        dcc.Graph(id='daily-ts')
+                    ])
+                ], justify='end')
 
                 , dbc.Row([
-                    dcc.Graph(id='daily-rts')
-                ])
-            ])
+                    dbc.Col([
+                        dcc.Graph(id='daily-rts')
+                    ])
+                ], justify='end')
+            ], width={'size': 4})
         ])
-    ])
+    ], fluid=True)
 
     # layout = dbc.Container([
-        # dbc.Row([
-        #     html.Div(id='first-page', children=[
-        #         html.Div(id='main', children=[
-        #             html.H1(
-        #                 id='header'
-        #                 , children='Dashboard'
-        #                 , style={
-        #                     'textAlign': 'center'
-        #                     # , 'color': colors['text']
-        #                 }
-        #             )
-        #             , dcc.DatePickerRange(
-        #                 id='date-picker-range'
-        #                 , min_date_allowed=FIRST_DATE
-        #                 , max_date_allowed=datetime.today().strftime(date_format)
-        #                 # , initial_visible_date=date(date.today().year, 1, 1)
-        #                 , start_date=FIRST_DATE
-        #                 , end_date=datetime.today().strftime(date_format)
-        #             )
-        #         ])
-        # ])
+    # dbc.Row([
+    #     html.Div(id='first-page', children=[
+    #         html.Div(id='main', children=[
+    #             html.H1(
+    #                 id='header'
+    #                 , children='Dashboard'
+    #                 , style={
+    #                     'textAlign': 'center'
+    #                     # , 'color': colors['text']
+    #                 }
+    #             )
+    #             , dcc.DatePickerRange(
+    #                 id='date-picker-range'
+    #                 , min_date_allowed=FIRST_DATE
+    #                 , max_date_allowed=datetime.today().strftime(date_format)
+    #                 # , initial_visible_date=date(date.today().year, 1, 1)
+    #                 , start_date=FIRST_DATE
+    #                 , end_date=datetime.today().strftime(date_format)
+    #             )
+    #         ])
+    # ])
 
     #         , dbc.Row([
     #             html.Div(id='first_row', children=[

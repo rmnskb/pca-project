@@ -30,6 +30,8 @@ def register_callbacks(dashapp):
         , price_type='open, high, low, close, adj_close'
     )
     info_data = data_instance.fetch_info_from_db()[['symbol', 'sector']]
+    rts = data_instance.create_daily_change()
+    mrts = data_instance.create_monthly_change()
 
     @dashapp.callback(
         Output('stocks-linechart', 'figure')
@@ -187,12 +189,12 @@ def register_callbacks(dashapp):
     def update_rts(hoverData, daily_value):
         symbol = hoverData['points'][0]['hovertext']
         if daily_value == 'Daily':
-            rts = data_instance.create_daily_change()[symbol]
+            df = rts[symbol]
         else:  # daily_value == 'Monthly'
-            rts = data_instance.create_monthly_change()[symbol]
+            df = mrts[symbol]
 
         ts = (
-            rts
+            df
             .rename('value')
             .reset_index()
         )

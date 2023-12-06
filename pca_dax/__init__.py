@@ -42,7 +42,7 @@ def register_dashapps(app):
     dashapp = Dash(
         __name__
         , server=app
-        , url_base_pathname='/dash/'
+        , url_base_pathname=URL_BASE
         , external_stylesheets=[dbc.themes.LUX]
         # , external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
     )
