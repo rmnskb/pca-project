@@ -57,6 +57,8 @@ def register_callbacks(dashapp):
 
         fig.update_layout(
             # xaxis_rangeslider_visible='slider' in slider_value
+            title=f'Candlestick chart of {selected_stock}'
+            , yaxis_title='Price'
         )
 
         return fig
@@ -94,6 +96,16 @@ def register_callbacks(dashapp):
             , y='adj_close'
             , color='sector'
             , title='German Market Stock Prices by Sector'
+        )
+
+        fig.update_layout(
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            )
         )
 
         return fig
@@ -155,7 +167,7 @@ def register_callbacks(dashapp):
         , Input('mean-vol-scatterplot', 'hoverData')
     )
     def update_ts(hoverData):
-        symbol = hoverData['points'][0]['customdata']
+        symbol = hoverData['points'][0]['hovertext']
 
         ts = (
             data[data['symbol'] == symbol]
@@ -173,10 +185,10 @@ def register_callbacks(dashapp):
         , Input('daily-monthly-type', 'value')
     )
     def update_rts(hoverData, daily_value):
-        symbol = hoverData['points'][0]['customdata']
+        symbol = hoverData['points'][0]['hovertext']
         if daily_value == 'Daily':
             rts = data_instance.create_daily_change()[symbol]
-        else:  # daily_value == 'Montly'
+        else:  # daily_value == 'Monthly'
             rts = data_instance.create_monthly_change()[symbol]
 
         ts = (
@@ -188,3 +200,11 @@ def register_callbacks(dashapp):
         title = symbol + f' {daily_value} Change Time Series'
 
         return create_ts(ts, title)
+
+    # Function to test the correctness of the output
+    # @callback(
+    #     Output('hover', 'figure')
+    #     , Input('mean-vol-scatterplot', 'hoverData')
+    # )
+    # def update_hoverdata(hoverData):
+    #     print(hoverData)

@@ -1,4 +1,5 @@
 from dash import dcc, html
+import dash_bootstrap_components as dbc
 from pca_dax import data_handler as dh
 from datetime import datetime, date
 import plotly.express as px
@@ -18,78 +19,175 @@ def get_layout():
     tickers = data.get_tickers()
     sectors = data.fetch_info_from_db()['sector'].unique().tolist()
 
-    layout = html.Div(id='first-page', children=[
-        html.Div(id='main', children=[
-            html.H1(
-                id='header'
-                , children='Dashboard'
-                , style={
-                    'textAlign': 'center'
-                    # , 'color': colors['text']
-                }
-            )
-            , dcc.DatePickerRange(
-                id='date-picker-range'
-                , min_date_allowed=FIRST_DATE
-                , max_date_allowed=datetime.today().strftime(date_format)
-                # , initial_visible_date=date(date.today().year, 1, 1)
-                , start_date=FIRST_DATE
-                , end_date=datetime.today().strftime(date_format)
-            )
+    layout = dbc.Container([
+        dbc.Row([
+            html.Div(id='title', children=[
+                html.H1(
+                    id='header'
+                    , children='Dashboard'
+                    , style={
+                        'textAlign': 'center'
+                    }
+                )
+
+                , dcc.DatePickerRange(
+                    id='date-picker-range'
+                    , min_date_allowed=FIRST_DATE
+                    , max_date_allowed=datetime.today().strftime(date_format)
+                    # , initial_visible_date=date(date.today().year, 1, 1)
+                    , start_date=FIRST_DATE
+                    , end_date=datetime.today().strftime(date_format)
+                )
+            ])
         ])
 
-        , html.Div(id='first_row', children=[
-            html.Div(id='first-graph', children=[
-                dcc.Dropdown(
-                    id='symbol-dropdown'
-                    , options=[{'label': k, 'value': k} for k in list(tickers)]
-                    , value='SAP.DE'
-                    # , multi=True
-                )
-                , dcc.Graph(
-                    id='stocks-linechart'
-                )
-            ], className='six columns')
+        , dbc.Row([
+            dbc.Col([
+                html.Div(id='first-graph', children=[
+                    dcc.Dropdown(
+                        id='symbol-dropdown'
+                        , options=[{'label': k, 'value': k} for k in list(tickers)]
+                        , value='SAP.DE'
+                        , style={'width': '85%'}
+                    )
 
-            , html.Div(id='second-graph', children=[
-                dcc.Dropdown(
-                    id='sectors-dropdown'
-                    , options=[{'label': k, 'value': k} for k in list(sectors)]
-                    , value=['Financial Services']
-                    , multi=True
-                )
-                , dcc.Graph(
-                    id='sectors-linechart'
-                )
-            ], className='six columns')
-        ], className='row')
+                    , dcc.Graph(
+                        id='stocks-linechart'
+                    )
+                ])
+            ])
 
-        # TODO: fix the scatterplot
-        , html.Div(id='second-row', children=[
-            html.Div(id='radio-filter', children=[
-                dcc.RadioItems(
-                    options=['Daily', 'Monthly']
-                    , value='Daily'
-                    , id='daily-monthly-type'
-                    , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
-                )
-            ], style={
-                'width': '49%', 'float': 'right'
-                , 'display': 'inline-block', 'padding': '10px 5px'
-            })
+            , dbc.Col([
+                html.Div(id='second-graph', children=[
+                    dcc.Dropdown(
+                        id='sectors-dropdown'
+                        , options=[{'label': k, 'value': k} for k in list(sectors)]
+                        , value=['Financial Services']
+                        , style={'width': '85%'}
+                        , multi=True
+                    )
 
-            , html.Div([
-                 dcc.Graph(
-                    id='mean-vol-scatterplot'
-                    , hoverData={'points': [{'customdata': 'SAP.DE'}]}
-                )
-            ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'})
+                    , dcc.Graph(
+                        id='sectors-linechart'
+                    )
+                ])
+            ])
+        ])
 
-            , html.Div([
-                dcc.Graph(id='daily-ts')
-                , dcc.Graph(id='daily-rts')
-            ], style={'display': 'inline-block', 'width': '49%'})
+        , dbc.Row([
+            dbc.Col([
+                html.Div(id='third-graph', children=[
+                    dcc.RadioItems(
+                        options=['Daily', 'Monthly']
+                        , value='Monthly'
+                        , id='daily-monthly-type'
+                        , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
+                    )
+
+                    , dcc.Graph(
+                        id='mean-vol-scatterplot'
+                        , hoverData={'points': [{'hovertext': 'SAP.DE'}]}
+                    )
+                ])
+            ])
+
+            , dbc.Col([
+                dbc.Row([
+                    dcc.Graph(id='daily-ts')
+                ])
+
+                , dbc.Row([
+                    dcc.Graph(id='daily-rts')
+                ])
+            ])
         ])
     ])
+
+    # layout = dbc.Container([
+        # dbc.Row([
+        #     html.Div(id='first-page', children=[
+        #         html.Div(id='main', children=[
+        #             html.H1(
+        #                 id='header'
+        #                 , children='Dashboard'
+        #                 , style={
+        #                     'textAlign': 'center'
+        #                     # , 'color': colors['text']
+        #                 }
+        #             )
+        #             , dcc.DatePickerRange(
+        #                 id='date-picker-range'
+        #                 , min_date_allowed=FIRST_DATE
+        #                 , max_date_allowed=datetime.today().strftime(date_format)
+        #                 # , initial_visible_date=date(date.today().year, 1, 1)
+        #                 , start_date=FIRST_DATE
+        #                 , end_date=datetime.today().strftime(date_format)
+        #             )
+        #         ])
+        # ])
+
+    #         , dbc.Row([
+    #             html.Div(id='first_row', children=[
+    #                 dbc.Col(
+    #                     html.Div(id='first-graph', children=[
+    #                         dcc.Dropdown(
+    #                             id='symbol-dropdown'
+    #                             , options=[{'label': k, 'value': k} for k in list(tickers)]
+    #                             , value='SAP.DE'
+    #                             , style={'width': '85%'}
+    #                             # , multi=True
+    #                         )
+    #                         , dcc.Graph(
+    #                             id='stocks-linechart'
+    #                         )
+    #                     ]
+    #                     )
+    #                 )
+    #
+    #                 , dbc.Col(
+    #                     html.Div(id='second-graph', children=[
+    #                         dcc.Dropdown(
+    #                             id='sectors-dropdown'
+    #                             , options=[{'label': k, 'value': k} for k in list(sectors)]
+    #                             , value=['Financial Services']
+    #                             , style={'width': '85%'}
+    #                             , multi=True
+    #                         )
+    #                         , dcc.Graph(
+    #                             id='sectors-linechart'
+    #                         )
+    #                     ])
+    #                 )
+    #             ])
+    #         ], align='center')
+    #
+    #         , html.Div(id='second-row', children=[
+    #             html.Div(id='radio-filter', children=[
+    #                 dcc.RadioItems(
+    #                     options=['Daily', 'Monthly']
+    #                     , value='Monthly'
+    #                     , id='daily-monthly-type'
+    #                     , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
+    #                 )
+    #                 , dcc.Graph(
+    #                     id='mean-vol-scatterplot'
+    #                     , hoverData={'points': [{'hovertext': 'SAP.DE'}]}
+    #                 )
+    #             ], style={
+    #                 'width': '60%', 'float': 'left'
+    #                 , 'display': 'inline-block', 'padding': '10px 5px'
+    #             })
+    #
+    #             # , html.Div([
+    #             #
+    #             # ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'})
+    #
+    #             , html.Div([
+    #                 dcc.Graph(id='daily-ts')
+    #                 , dcc.Graph(id='daily-rts')
+    #             ], style={'display': 'inline-block', 'width': '35%', 'float': 'right'})
+    #         ])
+    #     ])
+    # ], fluid=True)
 
     return layout

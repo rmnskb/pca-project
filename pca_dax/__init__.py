@@ -1,7 +1,7 @@
-# TODO: initialise an app here
 import os
 from flask import Flask
 from dash import Dash, html, dcc
+import dash_bootstrap_components as dbc
 URL_BASE = '/dash/'
 
 
@@ -43,7 +43,8 @@ def register_dashapps(app):
         __name__
         , server=app
         , url_base_pathname='/dash/'
-        , external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
+        , external_stylesheets=[dbc.themes.LUX]
+        # , external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
     )
 
     with app.app_context():
