@@ -43,12 +43,14 @@ def register_dashapps(app):
         __name__
         , server=app
         , url_base_pathname=URL_BASE
-        , external_stylesheets=[dbc.themes.LUX]
+        , external_stylesheets=[dbc.themes.LUX, '/static/style.css']
         # , external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
     )
 
     with app.app_context():
         dashapp.title = 'Dash App'
+        # dashapp.css.append_css({'external_url': '/static/style.css'})
+        # dashapp.server.static_folder = 'static'
         dashapp.layout = layout.get_layout()
         callbacks.register_callbacks(dashapp)
 

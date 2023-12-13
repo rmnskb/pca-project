@@ -9,8 +9,10 @@ date_format = '%Y-%m-%d'
 
 
 colors = {
-    'background': '#111111'
-    , 'text': '#7FDBFF'
+    'white': '#ffffff'
+    , 'hcolor': '#e3e5b1'
+    , 'bgcolor': '#c7c6c1'
+    , 'font-size': 22
 }
 
 
@@ -24,14 +26,41 @@ def get_layout():
     ])
 
     layout = dbc.Container([
-        dbc.Row([
+        html.H1([
+            html.Span('Dashboard', style={'color': colors['white']})
+            , html.Span(' | ', style={'color': colors['white']})
+            , html.Span('Data', style={'color': colors['hcolor']})
+            ]
+            , style={
+                'font-size': '280%'
+            }
+        )
+        , html.Hr(style={'color': colors['white']})
+
+        # , dbc.Row([
+        #     dbc.Col([
+        #         html.Div(id='title', children=[
+        #             html.H1(
+        #                 id='header'
+        #                 , children='Dashboard'
+        #                 , style={
+        #                     'textAlign': 'center'
+        #                     , 'color': 'white'
+        #                 }
+        #             )
+        #         ], className='bg-primary h-100'
+        #         , style={'size': '200px'})
+        #     ])
+        # ])
+
+        , dbc.Row([
             dbc.Col([
-                html.Div(id='title', children=[
-                    html.H1(
-                        id='header'
-                        , children='Dashboard'
+                html.Div([
+                    html.Label(
+                        'Pick a date range'
                         , style={
-                            'textAlign': 'center'
+                            'color': colors['hcolor']
+                            , 'font-size': colors['font-size']
                         }
                     )
 
@@ -55,6 +84,7 @@ def get_layout():
                         , options=[{'label': k, 'value': k} for k in list(tickers)]
                         , value='SAP.DE'
                         , style={'width': '85%'}
+                        # , className='nav-item dropdown'
                     )
 
                     , dcc.Graph(
@@ -71,6 +101,7 @@ def get_layout():
                         , value=['Financial Services']
                         , style={'width': '85%'}
                         , multi=True
+                        , className='nav-item dropdown'
                     )
 
                     , dcc.Graph(

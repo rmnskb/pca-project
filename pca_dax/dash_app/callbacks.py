@@ -61,6 +61,7 @@ def register_callbacks(dashapp):
             # xaxis_rangeslider_visible='slider' in slider_value
             title=f'Candlestick chart of {selected_stock}'
             , yaxis_title='Price'
+            , paper_bgcolor='#272a2d'
         )
 
         return fig
@@ -108,6 +109,7 @@ def register_callbacks(dashapp):
                 xanchor="right",
                 x=1
             )
+            , paper_bgcolor='#272a2d'
         )
 
         return fig
@@ -133,6 +135,7 @@ def register_callbacks(dashapp):
         fig.update_layout(margin={'l': 40, 'b': 40, 't': 40, 'r': 40}
                           # , yaxis_range=(0, 0.0015)
                           # , xaxis_range=(0, 0.04)
+                          , paper_bgcolor='#272a2d'
                           )
 
         return fig
@@ -160,6 +163,7 @@ def register_callbacks(dashapp):
         fig.update_layout(
             height=225
             , margin={'l': 20, 'b': 30, 'r': 10, 't': 10}
+            , paper_bgcolor='#272a2d'
         )
 
         return fig
