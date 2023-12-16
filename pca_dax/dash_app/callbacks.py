@@ -3,16 +3,15 @@ from pca_dax import data_handler as dh
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
-
-FIRST_DATE = '2010-01-01'
-date_format = '%Y-%m-%d'
+from pca_dax.dash_app.common_variables import FIRST_DATE, DATE_FORMAT, COLORS
+from itertools import cycle
 
 
 def get_date_mask(data, start_date, end_date):
     if start_date is not None and end_date is not None:
         date_mask = (data.index > start_date) & (data.index < end_date)
     elif start_date is not None:
-        date_mask = (data.index > start_date) & (data.index < datetime.today().strftime(date_format))
+        date_mask = (data.index > start_date) & (data.index < datetime.today().strftime(DATE_FORMAT))
     elif end_date is not None:
         date_mask = (data.index > FIRST_DATE) & (data.index < end_date)
     else:
@@ -60,8 +59,27 @@ def register_callbacks(dashapp):
         fig.update_layout(
             # xaxis_rangeslider_visible='slider' in slider_value
             title=f'Candlestick chart of {selected_stock}'
-            , yaxis_title='Price'
-            , paper_bgcolor='#272a2d'
+            , title_font=dict(size=18, color=COLORS['white'])
+            , paper_bgcolor=COLORS['bgcolor']
+            , plot_bgcolor=COLORS['bgcolor']
+        )
+
+        fig.update_xaxes(
+            showline=True
+            , showgrid=True
+            , zeroline=True
+            , title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
+            , title=''
+        )
+
+        fig.update_yaxes(
+            showline=True
+            , showgrid=True
+            , zeroline=False
+            , title='Price'
+            , title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
         )
 
         return fig
@@ -98,7 +116,7 @@ def register_callbacks(dashapp):
             , x=filtered_data.index
             , y='adj_close'
             , color='sector'
-            , title='German Market Stock Prices by Sector'
+            , color_discrete_sequence=COLORS['palette']
         )
 
         fig.update_layout(
@@ -109,7 +127,30 @@ def register_callbacks(dashapp):
                 xanchor="right",
                 x=1
             )
-            , paper_bgcolor='#272a2d'
+            , title='German Market Stock Prices by Sector'
+            , title_font=dict(size=18, color=COLORS['white'])
+            , legend_title_text='Sector'
+            , legend_font=dict(size=12, color=COLORS['white'])
+            , paper_bgcolor=COLORS['bgcolor']
+            , plot_bgcolor=COLORS['bgcolor']
+        )
+
+        fig.update_xaxes(
+            showline=True
+            , showgrid=True
+            , zeroline=True
+            , title='Date'
+            , title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
+        )
+
+        fig.update_yaxes(
+            showline=True
+            , showgrid=True
+            , zeroline=False
+            , title='Price'
+            , title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
         )
 
         return fig
@@ -129,14 +170,38 @@ def register_callbacks(dashapp):
             , y=mean_var['mean']
             , color=mean_var['sector']
             , hover_name=mean_var['symbol']
+            , color_discrete_sequence=COLORS['palette']
         )
 
         fig.update_traces(customdata=mean_var['symbol'])
         fig.update_layout(margin={'l': 40, 'b': 40, 't': 40, 'r': 40}
                           # , yaxis_range=(0, 0.0015)
                           # , xaxis_range=(0, 0.04)
-                          , paper_bgcolor='#272a2d'
+                          , title='Mean-Variance Plot of German Stocks'
+                          , title_font=dict(size=18, color=COLORS['white'])
+                          , legend_title_text='Sector'
+                          , legend_font=dict(size=12, color=COLORS['white'])
+                          , paper_bgcolor=COLORS['bgcolor']
+                          , plot_bgcolor=COLORS['bgcolor']
                           )
+
+        fig.update_xaxes(
+            showline=True
+            , showgrid=True
+            , zeroline=True
+            , title='Volatility'
+            , title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
+        )
+
+        fig.update_yaxes(
+            showline=True
+            , showgrid=True
+            , zeroline=False
+            , title='Mean Return'
+            , title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
+        )
 
         return fig
 
@@ -145,25 +210,45 @@ def register_callbacks(dashapp):
             df
             , x='date'
             , y='value'
+            , color_discrete_sequence=[COLORS['palette'][3]]
         )
 
         # fig.update_traces(mode='lines+markers')
 
-        fig.update_xaxes(showgrid=False)
-
-        fig.add_annotation(x=0, y=0.85
-                           , xanchor='left'
-                           , yanchor='bottom'
-                           , xref='paper'
-                           , yref='paper'
-                           , showarrow=False
-                           , align='left'
-                           , text=title)
+        # fig.add_annotation(x=0, y=0.85
+        #                    , xanchor='left'
+        #                    , yanchor='bottom'
+        #                    , xref='paper'
+        #                    , yref='paper'
+        #                    , showarrow=False
+        #                    , align='left'
+        #                    )
 
         fig.update_layout(
-            height=225
-            , margin={'l': 20, 'b': 30, 'r': 10, 't': 10}
-            , paper_bgcolor='#272a2d'
+            height=250
+            # , margin={'l': 20, 'b': 30, 'r': 10, 't': 10}
+            , title=title
+            , title_font=dict(size=14, color=COLORS['white'])
+            , paper_bgcolor=COLORS['bgcolor']
+            , plot_bgcolor=COLORS['bgcolor']
+        )
+
+        fig.update_xaxes(
+            showline=True
+            , showgrid=False
+            , zeroline=True
+            , title='Date'
+            , title_font=dict(size=12, color=COLORS['white'])
+            , tickfont=dict(size=10, color=COLORS['white'])
+        )
+
+        fig.update_yaxes(
+            showline=True
+            , showgrid=True
+            , zeroline=False
+            , title='Value'
+            , title_font=dict(size=12, color=COLORS['white'])
+            , tickfont=dict(size=10, color=COLORS['white'])
         )
 
         return fig

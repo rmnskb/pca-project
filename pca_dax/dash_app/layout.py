@@ -3,17 +3,7 @@ import dash_bootstrap_components as dbc
 from pca_dax import data_handler as dh
 from datetime import datetime, date
 import plotly.express as px
-
-FIRST_DATE = '2010-01-01'
-date_format = '%Y-%m-%d'
-
-
-colors = {
-    'white': '#ffffff'
-    , 'hcolor': '#e3e5b1'
-    , 'bgcolor': '#c7c6c1'
-    , 'font-size': 22
-}
+from pca_dax.dash_app.common_variables import FIRST_DATE, DATE_FORMAT, COLORS
 
 
 def get_layout():
@@ -27,15 +17,15 @@ def get_layout():
 
     layout = dbc.Container([
         html.H1([
-            html.Span('Dashboard', style={'color': colors['white']})
-            , html.Span(' | ', style={'color': colors['white']})
-            , html.Span('Data', style={'color': colors['hcolor']})
+            html.Span('Dashboard', style={'color': COLORS['white']})
+            , html.Span(' | ', style={'color': COLORS['white']})
+            , html.Span('Data', style={'color': COLORS['hcolor']})
             ]
             , style={
                 'font-size': '280%'
             }
         )
-        , html.Hr(style={'color': colors['white']})
+        , html.Hr(style={'color': COLORS['white']})
 
         # , dbc.Row([
         #     dbc.Col([
@@ -59,18 +49,18 @@ def get_layout():
                     html.Label(
                         'Pick a date range'
                         , style={
-                            'color': colors['hcolor']
-                            , 'font-size': colors['font-size']
+                            'color': COLORS['hcolor']
+                            , 'font-size': COLORS['font-size']
                         }
                     )
 
                     , dcc.DatePickerRange(
                         id='date-picker-range'
                         , min_date_allowed=FIRST_DATE
-                        , max_date_allowed=datetime.today().strftime(date_format)
+                        , max_date_allowed=datetime.today().strftime(DATE_FORMAT)
                         # , initial_visible_date=date(date.today().year, 1, 1)
                         , start_date=FIRST_DATE
-                        , end_date=datetime.today().strftime(date_format)
+                        , end_date=datetime.today().strftime(DATE_FORMAT)
                     )
                 ])
             ])
@@ -83,7 +73,9 @@ def get_layout():
                         id='symbol-dropdown'
                         , options=[{'label': k, 'value': k} for k in list(tickers)]
                         , value='SAP.DE'
+                        , placeholder='Select a symbol'
                         , style={'width': '85%'}
+                        # , className='bg-primary'
                         # , className='nav-item dropdown'
                     )
 
@@ -101,7 +93,7 @@ def get_layout():
                         , value=['Financial Services']
                         , style={'width': '85%'}
                         , multi=True
-                        , className='nav-item dropdown'
+                        # , className='nav-item dropdown'
                     )
 
                     , dcc.Graph(
@@ -114,13 +106,36 @@ def get_layout():
         , dbc.Row([
             dbc.Col([
                 html.Div(id='third-graph', children=[
-                    dcc.RadioItems(
+                    # dcc.RadioItems(
+                    #     options=['Daily', 'Monthly']
+                    #     , value='Monthly'
+                    #     , id='daily-monthly-type'
+                    #     , inline=True
+                    #     # , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
+                    #     , className='btn btn-primary'
+                    #     , labelClassName='btn btn-outline-primary'
+                    # )
+
+                    dbc.RadioItems(
                         options=['Daily', 'Monthly']
                         , value='Monthly'
                         , id='daily-monthly-type'
-                        # , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
-                        , labelClassName='mr-2'
+                        , inline=True
+                        , style={
+                            'background': COLORS['bgcolor']
+                            , 'color': COLORS['white']
+                        }
+                        # , className='btn btn-secondary'
+                        , labelClassName='btn btn-outline-primary'
                     )
+
+                    # dbc.Checklist(
+                    #     options=['Daily', 'Monthly']
+                    #     , value='Monthly'
+                    #     , id='daily-monthly-type'
+                    #     , inline=True
+                    #     , className='btn-check'
+                    # )
 
                     , dcc.Graph(
                         id='mean-vol-scatterplot'
@@ -154,16 +169,16 @@ def get_layout():
     #                 , children='Dashboard'
     #                 , style={
     #                     'textAlign': 'center'
-    #                     # , 'color': colors['text']
+    #                     # , 'color': COLORS['text']
     #                 }
     #             )
     #             , dcc.DatePickerRange(
     #                 id='date-picker-range'
     #                 , min_date_allowed=FIRST_DATE
-    #                 , max_date_allowed=datetime.today().strftime(date_format)
+    #                 , max_date_allowed=datetime.today().strftime(DATE_FORMAT)
     #                 # , initial_visible_date=date(date.today().year, 1, 1)
     #                 , start_date=FIRST_DATE
-    #                 , end_date=datetime.today().strftime(date_format)
+    #                 , end_date=datetime.today().strftime(DATE_FORMAT)
     #             )
     #         ])
     # ])

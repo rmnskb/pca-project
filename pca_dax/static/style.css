@@ -1,0 +1,93 @@
+body{
+    background-color: #272a2d;
+    margin: 0;
+}
+
+.Select-control{
+    background-color: #343a40 !important;
+    color: white;
+}
+
+.Select-menu-outer{
+    background-color: #343a40 !important;
+    color: white;
+}
+
+.Select-value-label{
+    color: white !important;
+    border-color: #272a2d;
+}
+
+#date-picker-range input{
+    background-color: #343a40 !important;
+    color: white !important;
+}
+
+#date-picker-range .DateRangePickerInput {
+    background-color: #343a40 !important;
+    fill: white !important;
+}
+
+#date-picker-range .DateRangePickerInput_arrow_svg {
+    fill: white;
+}
+
+#date-picker-range .DayPicker {
+    background-color: #343a40 !important;
+}
+
+#date-picker-range .DayPicker-Day {
+    color: white;
+}
+
+#date-picker-range .DayPicker-Day--selected {
+    background-color: #272a2d !important;
+    color: white !important;
+}
+
+#date-picker-range .CalendarMonth {
+    background-color: #343a40 !important;
+    color: white;
+}
+
+#date-picker-range .CalendarMonthGrid {
+    background-color: #343a40 !important;
+}
+
+#date-picker-range .CalendarMonth_caption {
+    color: white;
+}
+
+.CalendarDay__default {
+    border: 1px double white;
+    background-color: #343a40;
+    color: white;
+}
+
+.CalendarDay__selected {
+    background-color: #3e67ae;
+    border: 1px double #3e67ae;
+}
+
+.CalendarDay__selected_span {
+    background-color: #618fbf;
+    border: 1px double #618fbf;
+}
+
+.DayPickerNavigation_button__default {
+    border: 1px solid white;
+    background-color: #343a40;
+    color: white;
+}
+
+.DayPicker_weekHeader {
+    color: white;
+}
+
+.DayPickerKeyboardShortcuts_show__bottomRight::before {
+    border-right: 33px solid #618fbf;
+}
+
+.form-check-input {
+    display: none;
+}
