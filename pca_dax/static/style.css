@@ -88,6 +88,25 @@ body{
     border-right: 33px solid #618fbf;
 }
 
+/*.dash-radio-items {*/
+/*    list-style: none;*/
+/*    padding: 0;*/
+/*}*/
+
 .form-check-input {
     display: none;
+}
+
+.form-check-inline {
+    list-style-type: none;
+    padding: 0;
+    margin: 2px;
+}
+
+.btn-primary {
+    color: white;
+}
+
+.btn-outline-primary {
+    color: white;
 }

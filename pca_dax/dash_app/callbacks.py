@@ -120,19 +120,20 @@ def register_callbacks(dashapp):
         )
 
         fig.update_layout(
-            legend=dict(
+            title='German Market Stock Prices by Sector'
+            # , title_automargin=True
+            , title_font=dict(size=18, color=COLORS['white'])
+            , legend_title_text='Sector'
+            , legend_font=dict(size=12, color=COLORS['white'])
+            , paper_bgcolor=COLORS['bgcolor']
+            , plot_bgcolor=COLORS['bgcolor']
+            , legend=dict(
                 orientation="h",
                 yanchor="bottom",
                 y=1.02,
                 xanchor="right",
                 x=1
             )
-            , title='German Market Stock Prices by Sector'
-            , title_font=dict(size=18, color=COLORS['white'])
-            , legend_title_text='Sector'
-            , legend_font=dict(size=12, color=COLORS['white'])
-            , paper_bgcolor=COLORS['bgcolor']
-            , plot_bgcolor=COLORS['bgcolor']
         )
 
         fig.update_xaxes(

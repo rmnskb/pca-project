@@ -27,22 +27,6 @@ def get_layout():
         )
         , html.Hr(style={'color': COLORS['white']})
 
-        # , dbc.Row([
-        #     dbc.Col([
-        #         html.Div(id='title', children=[
-        #             html.H1(
-        #                 id='header'
-        #                 , children='Dashboard'
-        #                 , style={
-        #                     'textAlign': 'center'
-        #                     , 'color': 'white'
-        #                 }
-        #             )
-        #         ], className='bg-primary h-100'
-        #         , style={'size': '200px'})
-        #     ])
-        # ])
-
         , dbc.Row([
             dbc.Col([
                 html.Div([
@@ -53,16 +37,20 @@ def get_layout():
                             , 'font-size': COLORS['font-size']
                         }
                     )
-
-                    , dcc.DatePickerRange(
-                        id='date-picker-range'
-                        , min_date_allowed=FIRST_DATE
-                        , max_date_allowed=datetime.today().strftime(DATE_FORMAT)
-                        # , initial_visible_date=date(date.today().year, 1, 1)
-                        , start_date=FIRST_DATE
-                        , end_date=datetime.today().strftime(DATE_FORMAT)
-                    )
                 ])
+            ])
+        ])
+
+        , dbc.Row([
+            dbc.Col([
+                dcc.DatePickerRange(
+                    id='date-picker-range'
+                    , min_date_allowed=FIRST_DATE
+                    , max_date_allowed=datetime.today().strftime(DATE_FORMAT)
+                    # , initial_visible_date=date(date.today().year, 1, 1)
+                    , start_date=FIRST_DATE
+                    , end_date=datetime.today().strftime(DATE_FORMAT)
+                )
             ])
         ])
 
@@ -105,39 +93,29 @@ def get_layout():
 
         , dbc.Row([
             dbc.Col([
-                html.Div(id='third-graph', children=[
-                    # dcc.RadioItems(
-                    #     options=['Daily', 'Monthly']
-                    #     , value='Monthly'
-                    #     , id='daily-monthly-type'
-                    #     , inline=True
-                    #     # , labelStyle={'display': 'inline-block', 'marginTop': '5px'}
-                    #     , className='btn btn-primary'
-                    #     , labelClassName='btn btn-outline-primary'
-                    # )
-
+                html.Div([
                     dbc.RadioItems(
                         options=['Daily', 'Monthly']
-                        , value='Monthly'
                         , id='daily-monthly-type'
                         , inline=True
-                        , style={
-                            'background': COLORS['bgcolor']
-                            , 'color': COLORS['white']
-                        }
-                        # , className='btn btn-secondary'
+                        # , style={
+                        #     'background': COLORS['bgcolor']
+                        #     , 'color': COLORS['white']
+                        # }
+                        # , className='btn-group'
                         , labelClassName='btn btn-outline-primary'
+                        , labelCheckedClassName='btn-primary'
+                        # , inputCheckedClassName='btn btn-primary'
+                        , value='Monthly'
                     )
+                ])
+            ])
+        ])
 
-                    # dbc.Checklist(
-                    #     options=['Daily', 'Monthly']
-                    #     , value='Monthly'
-                    #     , id='daily-monthly-type'
-                    #     , inline=True
-                    #     , className='btn-check'
-                    # )
-
-                    , dcc.Graph(
+        , dbc.Row([
+            dbc.Col([
+                html.Div(id='third-graph', children=[
+                    dcc.Graph(
                         id='mean-vol-scatterplot'
                         , hoverData={'points': [{'hovertext': 'SAP.DE'}]}
                     )
