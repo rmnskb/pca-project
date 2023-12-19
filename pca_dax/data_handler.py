@@ -212,3 +212,43 @@ class DataHandler:
         )
 
         return self._mean_std
+
+
+class PCA:
+    def __init__(self, data: pd.DataFrame = None):
+        if data is None:
+            self._data = DataHandler().create_daily_change()
+        else:
+            self._data = data
+
+        self._tickers = data.columns
+        self.components = None
+        self.eigenvalues = None
+        self.explained_variance = None
+
+    def fit(self, cov_base: bool = False, n_comp: int = 10):
+        df = self._data
+
+        df_demeaned = df - df.mean(axis=0)
+
+        if cov_base:
+            mtrx = df_demeaned.cov()
+        else:
+            mtrx = df_demeaned.corr()
+
+        eigvls, eigvecs = np.linalg.eigh(mtrx)
+
+        idx = np.argsort(eigvls)[::-1]
+        sorted_eigvls = eigvls[idx]
+        sorted_eigvecs = eigvecs[:, idx]
+
+        components_names = ['PC' + str(pc) for pc in range(1, n_comp + 1)]
+
+        self.components = pd.DataFrame(
+            sorted_eigvecs[:, :n_comp]
+            , columns=components_names
+            , index=self._tickers
+        )
+
+        self.explained_variance = eigvls[:n_comp] / eigvls.sum()
+        self.eigenvalues = sorted_eigvls
