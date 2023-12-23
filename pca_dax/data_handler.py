@@ -231,6 +231,7 @@ class PCA:
         self._eigenvalues = None
         self._explained_variance = None
         self._loadings_sectors = pd.DataFrame([])
+        self._transposed_loadings = pd.DataFrame([])
 
     def fit(self, cov_base: bool = False, n_comp: int = 10):
         df = self._data
@@ -286,3 +287,17 @@ class PCA:
         )
 
         return self._loadings_sectors
+
+    def transpose_loadings_sectors(self, cov_base: bool = False, n_comp: int = 10):
+        ldngs = self.combine_loadings_sectors(cov_base=cov_base, n_comp=n_comp).reset_index()
+
+        self._transposed_loadings = pd.melt(
+            ldngs.sort_values(by=['sector'])
+            , id_vars=['index', 'sector']
+            , value_vars=ldngs[ldngs.columns.difference(['index', 'sector'])].columns.tolist()
+            , var_name='component'
+            , value_name='loading'
+            , ignore_index=False
+        )
+
+        return self._transposed_loadings

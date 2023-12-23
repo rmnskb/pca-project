@@ -89,3 +89,44 @@ def register_callbacks(dashapp):
         )
 
         return fig
+
+    @dashapp.callback(
+        Output('comp-ldngs', 'figure')
+        , Input('corr-cov-type', 'value')
+        , Input('comp-dropdown', 'value')
+    )
+    def update_components_loadings_graph(corr_cov, component):
+        if corr_cov == 'Correlation':
+            cov_mask = False
+        else:
+            cov_mask = True
+
+        components = pca_instance.transpose_loadings_sectors(cov_base=cov_mask, n_comp=10)
+        filtered_data = components[components['component'] == component]
+
+        fig = px.bar(
+            filtered_data
+            , x='index'
+            , y='loading'
+            , color='sector'
+            , color_discrete_sequence=COLORS['palette']
+        )
+
+        fig.update_layout(
+            paper_bgcolor=COLORS['bgcolor']
+            , plot_bgcolor=COLORS['bgcolor']
+        )
+
+        fig.update_xaxes(
+            title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
+            , title=''
+        )
+
+        fig.update_yaxes(
+            title='Loadings'
+            , title_font=dict(size=16, color=COLORS['white'])
+            , tickfont=dict(size=14, color=COLORS['white'])
+        )
+
+        return fig

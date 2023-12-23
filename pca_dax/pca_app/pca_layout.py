@@ -59,13 +59,34 @@ def get_layout():
                     )
                 ])
             ], width={'size': 6})
+
+            , dbc.Col([
+                html.Div([
+                    dcc.Dropdown(
+                        id='comp-dropdown'
+                        , options=[{'label': k, 'value': k} for k in ['PC' + str(pc) for pc in range(1, 11)]]
+                        , value='PC1'
+                        , style={'width': '85%'}
+                        , multi=False
+                        # , className='nav-item dropdown'
+                    )
+
+                    , dcc.Graph(
+                        id='comp-ldngs'
+                    )
+                ])
+            ], width={'size': 5, 'offset': 1})
         ])
 
         , dbc.Row([
             dbc.Col([
                 html.Div([
                     html.Label(
-                        ''
+                        'First 3 Components Visualisation'
+                        , style={
+                            'color': COLORS['hcolor']
+                            , 'font-size': COLORS['font-size']
+                        }
                     )
 
                     , dcc.Graph(
