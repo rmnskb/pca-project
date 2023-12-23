@@ -3,6 +3,7 @@ from flask import Flask
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 URL_BASE = '/dash/'
+PCA_URL_BASE = '/pca_app/'
 
 
 # app factory
@@ -36,10 +37,10 @@ def create_app(test_config=None):
 
 
 def register_dashapps(app):
-    from pca_dax.dash_app import layout
-    from pca_dax.dash_app import callbacks
+    from pca_dax.dash_app import layout, callbacks
+    from pca_dax.pca_app import pca_layout, pca_callbacks
 
-    dashapp = Dash(
+    dashpage = Dash(
         __name__
         , server=app
         , url_base_pathname=URL_BASE
@@ -47,11 +48,20 @@ def register_dashapps(app):
         # , external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
     )
 
-    with app.app_context():
-        dashapp.title = 'Dash App'
-        # dashapp.css.append_css({'external_url': '/static/style.css'})
-        # dashapp.server.static_folder = 'static'
-        dashapp.layout = layout.get_layout()
-        callbacks.register_callbacks(dashapp)
+    pcapage = Dash(
+        __name__
+        , server=app
+        , url_base_pathname=PCA_URL_BASE
+        , external_stylesheets=[dbc.themes.LUX, '/static/style.css']
+    )
 
+    with app.app_context():
+        dashpage.title = 'Dash App'
+        dashpage.layout = layout.get_layout()
+        callbacks.register_callbacks(dashpage)
+
+        pcapage.title = 'PCA App'
+        pcapage.layout = pca_layout.get_layout()
+        # callbacks.register_callbacks(pcapage)
+        pca_callbacks.register_callbacks(pcapage)
 

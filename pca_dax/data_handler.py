@@ -121,13 +121,18 @@ class DataHandler:
 
         return self._data
 
-    def fetch_info_from_db(self) -> pd.DataFrame:
+    def fetch_info_from_db(self, tickers=None) -> pd.DataFrame:
+        if tickers is None:
+            tckrs = self.get_tickers()
+        else:
+            tckrs = tickers
+
         with db.create_connection() as conn:
             self._companies_info = pd.read_sql(
                 f"""
                     SELECT *
                     FROM companies
-                    WHERE symbol IN {tuple(self.get_tickers())} AND sector IS NOT NULL
+                    WHERE symbol IN {tuple(tckrs)} AND sector IS NOT NULL
                 """
                 , con=conn
             )
@@ -162,7 +167,7 @@ class DataHandler:
 
     def create_daily_change(self) -> pd.DataFrame:
         """
-        Creates return series from wide stocks data (please choose one price type)
+        Creates return series from wide stocks data (please choose one price type, default is adj_close)
         :return: a dataframe with returns for given price type
         """
         data = self.preprocess()
@@ -222,9 +227,10 @@ class PCA:
             self._data = data
 
         self._tickers = data.columns
-        self.components = None
-        self.eigenvalues = None
-        self.explained_variance = None
+        self._components = pd.DataFrame([])
+        self._eigenvalues = None
+        self._explained_variance = None
+        self._loadings_sectors = pd.DataFrame([])
 
     def fit(self, cov_base: bool = False, n_comp: int = 10):
         df = self._data
@@ -244,11 +250,39 @@ class PCA:
 
         components_names = ['PC' + str(pc) for pc in range(1, n_comp + 1)]
 
-        self.components = pd.DataFrame(
+        self._components = pd.DataFrame(
             sorted_eigvecs[:, :n_comp]
             , columns=components_names
             , index=self._tickers
         )
 
-        self.explained_variance = eigvls[:n_comp] / eigvls.sum()
-        self.eigenvalues = sorted_eigvls
+        self._explained_variance = eigvls[:n_comp] / eigvls.sum()
+        self._eigenvalues = sorted_eigvls
+
+        return self._components
+
+    def combine_loadings_sectors(self, cov_base: bool = False, n_comp: int = 10):
+        if self._components.empty:
+            ldngs = self.fit(cov_base=cov_base, n_comp=n_comp)
+        else:
+            ldngs = self._components
+
+        tickers = self._components.index.tolist()
+
+        with db.create_connection() as conn:
+            sectors = pd.read_sql(
+                f"""
+                    SELECT symbol, sector
+                    FROM companies
+                    WHERE symbol IN {tuple(tickers)}
+                """
+                , con=conn
+            )
+
+        self._loadings_sectors = pd.concat(
+            [ldngs, sectors.set_index('symbol')]
+            , axis=1
+            , join='inner'
+        )
+
+        return self._loadings_sectors
