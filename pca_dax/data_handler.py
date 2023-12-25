@@ -5,12 +5,7 @@ import yfinance as yf
 from datetime import datetime
 from pca_dax import yfinance_info as yfi
 from pca_dax import db
-
-# TODO: append the latest data with the help of time delta
-
-FIRST_DATE = '2010-01-01'
-TICKERS = []
-date_format = '%Y-%m-%d'
+from pca_dax.common_variables import FIRST_DATE, DATE_FORMAT
 
 
 class DataHandler:
@@ -96,9 +91,17 @@ class DataHandler:
         return self._companies_info
 
     def fetch_stocks_from_db(self, price_type: str = 'adj_close', wide_format: bool = True) -> pd.DataFrame:
+        """
+        Fetches data from database for given stocks and given timeframe
+        :param price_type: price types, such as low, high, close, adj_close.
+            Multiple types can be chosen in a string by separating by comma.
+        :param wide_format: False if stocks should be in a column, with price types as columns.
+            True if stocks should be as columns, with one price type on a given date.
+        :return: 
+        """
         # sets today's date if the end date is missing or if it is in the future
-        if self._end_date is None or datetime.strptime(self._end_date, date_format) > datetime.today():
-            self._end_date = datetime.today().strftime(date_format)
+        if self._end_date is None or datetime.strptime(self._end_date, DATE_FORMAT) > datetime.today():
+            self._end_date = datetime.today().strftime(DATE_FORMAT)
 
         # creates connection and reads stocks data with function arguments
         with db.create_connection() as conn:
@@ -171,21 +174,14 @@ class DataHandler:
         :return: a dataframe with returns for given price type
         """
         data = self.preprocess()
-        # if (data.dtypes == float).all():
-        # if data.select_dtypes(exclude=['int64', 'float64']).columns.empty:
         dly_chg = data.pct_change(1)
         self._dly_chg = dly_chg.dropna()
-        # else:
-            # non_num_cols = data.select_dtypes(exclude=['int64', 'float64']).columns
-            # raise TypeError(f'Trying to calculate changes with non-numeric values: {non_num_cols}')
-            # raise TypeError(f'Columns: {data.columns}')
 
         return self._dly_chg
 
     def create_monthly_change(self) -> pd.DataFrame:
         """
         Converts daily returns to monthly returns
-        :return:
         """
         if self._dly_chg.empty:
             _dly_chg = self.create_daily_change()
@@ -197,6 +193,11 @@ class DataHandler:
         return self._mth_chg
 
     def create_mean_var_df(self, daily_freq: bool = True) -> pd.DataFrame:
+        """
+        Create a dataframe containing data about stocks' mean return and variance, and the respective sectors
+        :param daily_freq: boolean, True if you want to use daily price change frequency, False if monthly
+        :return: returns a df with given frequency's mean, variance and sectors
+        """
         if daily_freq:
             rts = self.create_daily_change()
         else:
@@ -263,11 +264,8 @@ class PCA:
         return self._components
 
     def combine_loadings_sectors(self, cov_base: bool = False, n_comp: int = 10):
-        if self._components.empty:
-            ldngs = self.fit(cov_base=cov_base, n_comp=n_comp)
-        else:
-            ldngs = self._components
 
+        ldngs = self.fit(cov_base=cov_base, n_comp=n_comp)
         tickers = self._components.index.tolist()
 
         with db.create_connection() as conn:

@@ -1,9 +1,8 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
-URL_BASE = '/dash/'
-PCA_URL_BASE = '/pca_app/'
+from pca_dax.common_variables import HOME_URL_BASE, DASH_URL_BASE, PCA_URL_BASE
 
 
 # app factory
@@ -24,9 +23,9 @@ def create_app(test_config=None):
     except OSError:
         pass
 
-    @app.route('/hello')
+    @app.route(HOME_URL_BASE)
     def hello():
-        return 'Hello, World!'
+        return render_template('pca_home.html')
 
     from . import db
     db.init_app(app)
@@ -43,9 +42,8 @@ def register_dashapps(app):
     dashpage = Dash(
         __name__
         , server=app
-        , url_base_pathname=URL_BASE
+        , url_base_pathname=DASH_URL_BASE
         , external_stylesheets=[dbc.themes.LUX, '/static/style.css']
-        # , external_stylesheets=['https://codepen.io/chriddyp/pen/bWLwgP.css']
     )
 
     pcapage = Dash(
@@ -62,6 +60,5 @@ def register_dashapps(app):
 
         pcapage.title = 'PCA App'
         pcapage.layout = pca_layout.get_layout()
-        # callbacks.register_callbacks(pcapage)
         pca_callbacks.register_callbacks(pcapage)
 

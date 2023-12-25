@@ -1,6 +1,28 @@
 body{
-    background-color: #272a2d;
+    /*background-color: #272a2d;*/
+    /*background-color: #eaeaea;*/
+    background-color: #3f4448;
     margin: 0;
+}
+
+span{
+    color: white;
+}
+
+hr{
+    color: white;
+}
+
+.nav{
+    font-size: 150%;
+    background-color: #272a2d;
+    border-radius: 10px;
+}
+
+.card{
+    background-color: #272a2d;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .Select-control{

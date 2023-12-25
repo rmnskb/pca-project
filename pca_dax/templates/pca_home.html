@@ -1,0 +1,48 @@
+<!doctype html>
+<title> {% block title %}{% endblock %} PCA Project - Home </title>
+<link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<body>
+    <div class="container-fluid">
+        <nav style="background-color: #272a2d">
+            <h1 style="font-size: 280%">
+                <span> Risk Sources with PCA </span>
+                <span>  |  </span>
+                <a style="color: #e3e5b1; display: inline" class="m-1 nav-link"> Home </a>
+                <a href="/pca/dash/" style="color: white; display: inline" class="m-1 nav-link"> Data </a>
+                <a href="/pca/app/" style="color: white; display: inline" class="m-1 nav-link active"> PCA </a>
+            </h1>
+            <hr>
+        </nav>
+
+        <h2>Identifying Risk Sources with Principal Component Analysis</h2>
+        <p>The aim of this app is to look into how Principal Component Analysis can be employed to identify uncorrelated risk sources for leveraging in stock markets.</p>
+        <h3>The app tries to answer following questions: </h3>
+        <ol>
+            <li> What is difference between using correlation and covariance matrix as an underlying foundation of PCA?</li>
+            <li> What can be the possible interpretation of first N principal components? How are they different? </li>
+        </ol>
+        <h3>Methodology: </h3>
+        <p>
+            There exist numerous books and articles describing application of PCA on time series data,
+            as well as research papers discussing possible implications of the applied method.</p>
+        <p>
+            The data was taken from German equity market, in particular companies listed in the DAX, MDAX and SDAX indices,
+            which contain combination of large and medium-sized enterprises with no industry restrictions.
+            The timeframe spans more than 12 years, since the beginning of 2010.
+        </p>
+        <p>
+            Python programming language and its various libraries was used to assist during the implementation process.
+            The data itself was taken through Yahoo! Finance API.
+        </p>
+        <p>
+            The German market was chosen to be conducted the research on considering following reasons:
+        </p>
+        <ol>
+            <li>It is a representative of a highly developed European country with diversified economy,
+            which is reflected in the equity market itself.</li>
+            <li>The said market is not a usual example in the textbooks and is rarely being talked about
+            in the non-specific research papers discussing risk factors and equity markets.</li>
+        </ol>
+    </div>
+</body>

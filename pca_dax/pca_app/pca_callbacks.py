@@ -1,9 +1,18 @@
-from dash import Input, Output, callback
+from dash import Input, Output
 from pca_dax import data_handler as dh
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import datetime
-from pca_dax.dash_app.common_variables import FIRST_DATE, DATE_FORMAT, COLORS
+from pca_dax.common_variables import COLORS
+
+theme_template = go.Layout({
+    'paper_bgcolor': COLORS['bgcolor']
+    , 'plot_bgcolor': COLORS['bgcolor']
+    , 'scene': {
+        'xaxis': {
+
+        }
+    }
+})
 
 
 def register_callbacks(dashapp):
@@ -23,8 +32,9 @@ def register_callbacks(dashapp):
         else:
             cov_mask = True
 
-        components = pca_instance.combine_loadings_sectors(cov_base=cov_mask, n_comp=5)
-        dims = components.loc[:, components.columns != 'sector'].columns.to_list()
+        components = pca_instance.combine_loadings_sectors(cov_base=cov_mask, n_comp=10)
+        # dims = components.loc[:, components.columns != 'sector'].columns.to_list()
+        dims = components.loc[:, components.columns.isin(['PC' + str(pc) for pc in range(1, 6)])].columns.to_list()
 
         fig = px.scatter_matrix(
             components
@@ -34,32 +44,18 @@ def register_callbacks(dashapp):
         )
 
         fig.update_layout(
-            paper_bgcolor=COLORS['bgcolor']
+            {'xaxis' + str(i + 1): dict(title=dict(font=dict(size=12)), color=COLORS['white']) for i in range(6)}
+            , paper_bgcolor=COLORS['bgcolor']
             , plot_bgcolor=COLORS['bgcolor']
+            , legend_title_text='Sector'
+            , legend_font=dict(size=12, color=COLORS['white'])
         )
 
-        for i, label in enumerate(dims):
-            fig.update_xaxes(
-                tickfont=dict(size=14, color=COLORS['white'])
-            )
-            
-            fig.update_yaxes(
-                tickfont=dict(size=14, color=COLORS['white'])
-            )
+        fig.update_layout(
+            {'yaxis' + str(i + 1): dict(title=dict(font=dict(size=12)), color=COLORS['white']) for i in range(6)}
+        )
 
-        # fig.update_xaxes(
-        #     title_font=dict(size=16, color=COLORS['white'])
-        #     , tickfont=dict(size=14, color=COLORS['white'])
-        #     , title=''
-        # )
-        #
-        # fig.update_yaxes(
-        #     title_font=dict(size=16, color=COLORS['white'])
-        #     , tickfont=dict(size=14, color=COLORS['white'])
-        #     , title=''
-        # )
-
-        fig.update_traces(diagonal_visible=False)
+        fig.update_traces(diagonal_visible=False, showupperhalf=False)
 
         return fig
 
@@ -73,7 +69,7 @@ def register_callbacks(dashapp):
         else:
             cov_mask = True
 
-        components = pca_instance.combine_loadings_sectors(cov_base=cov_mask, n_comp=3)
+        components = pca_instance.combine_loadings_sectors(cov_base=cov_mask, n_comp=10)
         dims = components.loc[:, components.columns != 'sector'].columns.to_list()
 
         fig = px.scatter_3d(
@@ -86,6 +82,26 @@ def register_callbacks(dashapp):
         fig.update_layout(
             paper_bgcolor=COLORS['bgcolor']
             , plot_bgcolor=COLORS['bgcolor']
+            , legend_title_text='Sector'
+            , legend_font=dict(size=12, color=COLORS['white'])
+            , scene=dict(
+                xaxis=dict(
+                    title=dict(font=dict(size=12))
+                    , color=COLORS['white']
+                    , backgroundcolor=COLORS['bgcolor_sec']
+                )
+                , yaxis=dict(
+                    title=dict(font=dict(size=12))
+                    , color=COLORS['white']
+                    , backgroundcolor=COLORS['bgcolor_sec']
+                )
+                , zaxis=dict(
+                    title=dict(font=dict(size=12))
+                    , color=COLORS['white']
+                    , backgroundcolor=COLORS['bgcolor_sec']
+                )
+                # , bgcolor=COLORS['bgcolor_sec']
+            )
         )
 
         return fig
@@ -115,12 +131,14 @@ def register_callbacks(dashapp):
         fig.update_layout(
             paper_bgcolor=COLORS['bgcolor']
             , plot_bgcolor=COLORS['bgcolor']
+            , legend_title_text='Sector'
+            , legend_font=dict(size=12, color=COLORS['white'])
         )
 
         fig.update_xaxes(
             title_font=dict(size=16, color=COLORS['white'])
             , tickfont=dict(size=14, color=COLORS['white'])
-            , title=''
+            , showticklabels=False
         )
 
         fig.update_yaxes(

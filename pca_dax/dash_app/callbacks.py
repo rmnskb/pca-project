@@ -3,8 +3,7 @@ from pca_dax import data_handler as dh
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
-from pca_dax.dash_app.common_variables import FIRST_DATE, DATE_FORMAT, COLORS
-from itertools import cycle
+from pca_dax.common_variables import FIRST_DATE, DATE_FORMAT, COLORS
 
 
 def get_date_mask(data, start_date, end_date):
@@ -35,14 +34,12 @@ def register_callbacks(dashapp):
     @dashapp.callback(
         Output('stocks-linechart', 'figure')
         , Input('symbol-dropdown', 'value')
-        # , Input('toggle-rangeslider', 'value')
         , Input('date-picker-range', 'start_date')
         , Input('date-picker-range', 'end_date')
     )
     def update_candlestick_graph(selected_stock, start_date, end_date):
         date_mask = get_date_mask(data, start_date, end_date)
 
-        # filtered_data = data[data.symbol.isin(selected_stock)]
         filtered_data = data[
                 (data.symbol == selected_stock)
                 & date_mask
@@ -57,8 +54,7 @@ def register_callbacks(dashapp):
         ))
 
         fig.update_layout(
-            # xaxis_rangeslider_visible='slider' in slider_value
-            title=f'Candlestick chart of {selected_stock}'
+            title=f"{selected_stock}"
             , title_font=dict(size=18, color=COLORS['white'])
             , paper_bgcolor=COLORS['bgcolor']
             , plot_bgcolor=COLORS['bgcolor']
@@ -120,10 +116,9 @@ def register_callbacks(dashapp):
         )
 
         fig.update_layout(
-            title='German Market Stock Prices by Sector'
-            # , title_automargin=True
-            , title_font=dict(size=18, color=COLORS['white'])
-            , legend_title_text='Sector'
+            # title='German Market Stock Prices by Sector'
+            # , title_font=dict(size=18, color=COLORS['white'])
+            legend_title_text='Sector'
             , legend_font=dict(size=12, color=COLORS['white'])
             , paper_bgcolor=COLORS['bgcolor']
             , plot_bgcolor=COLORS['bgcolor']
@@ -159,8 +154,6 @@ def register_callbacks(dashapp):
     @dashapp.callback(
         Output('mean-vol-scatterplot', 'figure')
         , Input('daily-monthly-type', 'value')
-        # , Input('date-picker-range', 'start_date')
-        # , Input('date-picker-range', 'end_date')
     )
     def update_scatter_graph(daily_value):
         daily_mask = (daily_value == 'Daily')
@@ -176,10 +169,8 @@ def register_callbacks(dashapp):
 
         fig.update_traces(customdata=mean_var['symbol'])
         fig.update_layout(margin={'l': 40, 'b': 40, 't': 40, 'r': 40}
-                          # , yaxis_range=(0, 0.0015)
-                          # , xaxis_range=(0, 0.04)
-                          , title='Mean-Variance Plot of German Stocks'
-                          , title_font=dict(size=18, color=COLORS['white'])
+                          # , title='Mean-Variance Plot of German Stocks'
+                          # , title_font=dict(size=18, color=COLORS['white'])
                           , legend_title_text='Sector'
                           , legend_font=dict(size=12, color=COLORS['white'])
                           , paper_bgcolor=COLORS['bgcolor']
@@ -213,17 +204,6 @@ def register_callbacks(dashapp):
             , y='value'
             , color_discrete_sequence=[COLORS['palette'][3]]
         )
-
-        # fig.update_traces(mode='lines+markers')
-
-        # fig.add_annotation(x=0, y=0.85
-        #                    , xanchor='left'
-        #                    , yanchor='bottom'
-        #                    , xref='paper'
-        #                    , yref='paper'
-        #                    , showarrow=False
-        #                    , align='left'
-        #                    )
 
         fig.update_layout(
             height=250
@@ -292,11 +272,3 @@ def register_callbacks(dashapp):
         title = symbol + f' {daily_value} Change Time Series'
 
         return create_ts(ts, title)
-
-    # Function to test the correctness of the output
-    # @callback(
-    #     Output('hover', 'figure')
-    #     , Input('mean-vol-scatterplot', 'hoverData')
-    # )
-    # def update_hoverdata(hoverData):
-    #     print(hoverData)
