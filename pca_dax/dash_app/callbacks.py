@@ -197,12 +197,13 @@ def register_callbacks(dashapp):
 
         return fig
 
-    def create_ts(df, title):
+    def create_ts(df, title, colour_number):
         fig = px.line(
             df
             , x='date'
             , y='value'
-            , color_discrete_sequence=[COLORS['palette'][3]]
+            # , color=COLORS['palette'][colour_number]
+            , color_discrete_sequence=[COLORS['palette'][colour_number]]
         )
 
         fig.update_layout(
@@ -240,6 +241,7 @@ def register_callbacks(dashapp):
     )
     def update_ts(hoverData):
         symbol = hoverData['points'][0]['hovertext']
+        colour = hoverData['points'][0]['curveNumber']
 
         ts = (
             data[data['symbol'] == symbol]
@@ -249,7 +251,8 @@ def register_callbacks(dashapp):
 
         title = symbol + f' Daily Time Series'
 
-        return create_ts(ts, title)
+        return create_ts(ts, title, colour)
+        # return print(colour)
 
     @callback(
         Output('daily-rts', 'figure')
@@ -258,6 +261,8 @@ def register_callbacks(dashapp):
     )
     def update_rts(hoverData, daily_value):
         symbol = hoverData['points'][0]['hovertext']
+        colour = hoverData['points'][0]['curveNumber']
+
         if daily_value == 'Daily':
             df = rts[symbol]
         else:  # daily_value == 'Monthly'
@@ -271,4 +276,5 @@ def register_callbacks(dashapp):
 
         title = symbol + f' {daily_value} Change Time Series'
 
-        return create_ts(ts, title)
+        return create_ts(ts, title, colour)
+        # return print(colour)
