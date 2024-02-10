@@ -4,52 +4,52 @@ from pca_dax.common_variables import COLORS, HOME_URL_BASE, DASH_URL_BASE, PCA_U
 
 
 def get_layout():
-    nav = dbc.Nav([
-        # dbc.NavbarBrand('Risk Sources with PCA |')
-        html.Span('Risk Sources with PCA', style={'color': COLORS['white'], 'font-size': '175%'}, className='m-1')
-        # , dbc.NavItem(
-        , html.A('Home'
-           , href=HOME_URL_BASE
-           , style={'color': COLORS['white']}, className='m-1 nav-link'
-        )
-        # )
-        , dbc.NavItem(
-            html.A('Data'
-                   , href=DASH_URL_BASE
-                   , style={'color': COLORS['white']}, className='m-1 nav-link'
-                   )
-        )
-        , dbc.NavItem(
-            html.A('PCA'
-                   , href=PCA_URL_BASE
-                   , style={'color': COLORS['hcolor']}
-                   , className='m-1 nav-link')
-        )
-    ])
+    # nav = dbc.Nav([
+    #     # dbc.NavbarBrand('Risk Sources with PCA |')
+    #     html.Span('Risk Sources with PCA', style={'color': COLORS['white'], 'font-size': '175%'}, className='m-1')
+    #     # , dbc.NavItem(
+    #     , html.A('Home'
+    #        , href=HOME_URL_BASE
+    #        , style={'color': COLORS['white']}, className='m-1 nav-link'
+    #     )
+    #     # )
+    #     , dbc.NavItem(
+    #         html.A('Data'
+    #                , href=DASH_URL_BASE
+    #                , style={'color': COLORS['white']}, className='m-1 nav-link'
+    #                )
+    #     )
+    #     , dbc.NavItem(
+    #         html.A('PCA'
+    #                , href=PCA_URL_BASE
+    #                , style={'color': COLORS['hcolor']}
+    #                , className='m-1 nav-link')
+    #     )
+    # ])
 
     layout = dbc.Container([
-        nav
-        # html.H1([
-        #     html.Span('Risk Sources with PCA', style={'color': COLORS['white']})
-        #     , html.Span(' | ', style={'color': COLORS['white']})
-        #     , html.A(
-        #         'Home'
-        #         , href=HOME_URL_BASE
-        #         , style={'color': COLORS['white'], 'display': 'inline'}, className='m-1 nav-link'
-        #     )
-        #     , html.A('Data', href=DASH_URL_BASE, style={
-        #         'color': COLORS['white'], 'display': 'inline'
-        #     }, className='m-1 nav-link active')
-        #     , html.A(
-        #         'PCA'
-        #         , style={'color': COLORS['hcolor'], 'display': 'inline'}, className='m-1 nav-link'
-        #     )
-        # ]
-        #     , style={
-        #         'font-size': '280%'
-        #     }
-        # )
-        # , html.Hr(style={'color': COLORS['white']})
+        # nav
+        html.H1([
+            html.Span('Risk Sources with PCA', style={'color': COLORS['white']})
+            , html.Span(' | ', style={'color': COLORS['white']})
+            , html.A(
+                'Home'
+                , href=HOME_URL_BASE
+                , style={'color': COLORS['white'], 'display': 'inline'}, className='m-1 nav-link'
+            )
+            , html.A('Data', href=DASH_URL_BASE, style={
+                'color': COLORS['white'], 'display': 'inline'
+            }, className='m-1 nav-link active')
+            , html.A(
+                'PCA'
+                , style={'color': COLORS['hcolor'], 'display': 'inline'}, className='m-1 nav-link'
+            )
+        ]
+            , style={
+                'font-size': '280%'
+            }
+        )
+        , html.Hr(style={'color': COLORS['white']})
 
         , dbc.Row([
             dbc.Col([

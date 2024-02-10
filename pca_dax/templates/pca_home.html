@@ -44,5 +44,30 @@
             <li>The said market is not a usual example in the textbooks and is rarely being talked about
             in the non-specific research papers discussing risk factors and equity markets.</li>
         </ol>
+        <h3>Implementation: </h3>
+        <p>
+            This application was created using Python's Dash implementation. Different modules were interconnected
+            with the help of Flask engine. The data about indexes constituents were gathered from an open source and
+            the price data was acquired using Yahoo! Finance's API. <br>
+            The data was then stored in SQLite database. The ETL process was handled using Python.
+            Plotly provides the graphs for the frontend, as well as the overall HTML structure that accompanies it.
+            At this point the backend can handle following actions:
+        </p>
+        <ul>
+            <li>
+                Set up an SQLite database with a given schema, that allows the accommodation of daily stocks data
+            </li>
+            <li>
+                Conduct an ETL process: from fetching the data from API
+                to storing it in the Database following normalisation conventions
+            </li>
+            <li>
+                Preprocess the given data for feeding the frontend data-dependent elements
+            </li>
+            <li>
+                Define the Principal Component Analysis from scratch, thus modelling the data and providing
+                insights into the underlying statistical structure
+            </li>
+        </ul>
     </div>
 </body>

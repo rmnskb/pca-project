@@ -20,7 +20,7 @@ class DataHandler:
         self._companies_info = pd.DataFrame({})
         self._mean_std = pd.DataFrame({})
 
-    def get_tickers(self):
+    def get_tickers(self) -> set[str]:
         """
         Scrapes the constituents of 3 different size DAX indices, then adds country suffix
         :return: the list of all actual constituents of 3 indices
@@ -234,7 +234,14 @@ class PCA:
         self._loadings_sectors = pd.DataFrame([])
         self._transposed_loadings = pd.DataFrame([])
 
-    def fit(self, cov_base: bool = False, n_comp: int = 10):
+    def fit(self, cov_base: bool = False, n_comp: int = 10) -> pd.DataFrame:
+        """
+        Fit a PCA model to the given data
+        :param cov_base: use covariance matrix as an underlying base for PCA
+        :param n_comp: number of components to retain after fitting
+        :return: returns a Dataframe containing data about components, where the columns are the components and
+            the indices are the given tickers.
+        """
         df = self._data
 
         df_demeaned = df - df.mean(axis=0)
@@ -263,8 +270,13 @@ class PCA:
 
         return self._components
 
-    def combine_loadings_sectors(self, cov_base: bool = False, n_comp: int = 10):
-
+    def combine_loadings_sectors(self, cov_base: bool = False, n_comp: int = 10) -> pd.DataFrame:
+        """
+        Combine components' loadings with respective tickers' sectors
+        :param cov_base: use covariance matrix as an underlying base for PCA, passes it further to fit method
+        :param n_comp: number of components to retain after fitting, passes it further to fit method
+        :return: return a Dataframe
+        """
         ldngs = self.fit(cov_base=cov_base, n_comp=n_comp)
         tickers = self._components.index.tolist()
 
@@ -286,7 +298,15 @@ class PCA:
 
         return self._loadings_sectors
 
-    def transpose_loadings_sectors(self, cov_base: bool = False, n_comp: int = 10):
+    def transpose_loadings_sectors(self, cov_base: bool = False, n_comp: int = 10) -> pd.DataFrame:
+        """
+        Transpose the Dataframe containing the loadings and their respective sectors
+        :param cov_base: use covariance matrix as an underlying base for PCA,
+            passes it further to combine_loadings_sectors method
+        :param n_comp: number of components to retain after fitting,
+            passes it further to combine_loadings_sectors method
+        :return: return a Dataframe
+        """
         ldngs = self.combine_loadings_sectors(cov_base=cov_base, n_comp=n_comp).reset_index()
 
         self._transposed_loadings = pd.melt(

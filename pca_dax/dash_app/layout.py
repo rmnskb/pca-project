@@ -177,7 +177,7 @@ def get_layout():
                         html.Div(id='third-graph', children=[
                             dcc.Graph(
                                 id='mean-vol-scatterplot'
-                                , hoverData={'points': [{'hovertext': 'SAP.DE'}]}
+                                , hoverData={'points': [{'hovertext': 'SAP.DE', 'curveNumber': 3}]}
                             )
                         ])
                     ], width={'size': 7})
