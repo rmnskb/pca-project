@@ -1,4 +1,6 @@
 import os
+
+import flask
 from flask import Flask, render_template
 from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
@@ -6,7 +8,7 @@ from pca_dax.common_variables import HOME_URL_BASE, DASH_URL_BASE, PCA_URL_BASE
 
 
 # app factory
-def create_app(test_config=None):
+def create_app(test_config=None) -> flask.Flask:
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('SECRET_KEY')
@@ -30,6 +32,7 @@ def create_app(test_config=None):
     from . import db
     db.init_app(app)
 
+    # TODO: Handle an empty DB case
     register_dashapps(app)
 
     return app

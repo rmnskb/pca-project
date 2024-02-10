@@ -2,31 +2,26 @@ DROP TABLE IF EXISTS companies;
 DROP TABLE IF EXISTS stocks;
 
 CREATE TABLE companies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    symbol VARCHAR(15) UNIQUE NOT NULL,
+    symbol VARCHAR(15) PRIMARY KEY,
     name VARCHAR,
     exchange VARCHAR,
     industry VARCHAR,
     sector VARCHAR,
     market_cap INTEGER,
---     dividend_rate DECIMAL(2, 6),
---     dividend_yield DECIMAL(2, 6),
     book_value DECIMAL(18, 6),
---     price_to_book DECIMAL(2, 6),
     beta DECIMAL
 );
 
 CREATE TABLE stocks (
-    stock_value_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    symbol VARCHAR(15) NOT NULL,
---     company_id INTEGER NOT NULL,
     date DATETIME NOT NULL,
+    symbol VARCHAR(15),
     open DECIMAL(18, 4),
     high DECIMAL(18, 4),
     low DECIMAL(18, 4),
     close DECIMAL(18, 4),
     adj_close DECIMAL(18, 4),
-    volume INTEGER,
-    UNIQUE(symbol, date)
---     FOREIGN KEY (company_id) REFERENCES companies (id)
+    volume INTEGER DEFAULT 0,
+    -- set up a composite PK consisting of symbol and date combination
+    CONSTRAINT con_symbol_date PRIMARY KEY(symbol, date),
+    FOREIGN KEY (symbol) REFERENCES companies(symbol)
 );
