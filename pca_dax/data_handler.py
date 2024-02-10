@@ -125,6 +125,11 @@ class DataHandler:
         return self._data
 
     def fetch_info_from_db(self, tickers=None) -> pd.DataFrame:
+        """
+        Fetches data about companies from an initialised database.
+        :param tickers: List of tickers to be retrieved the information for
+        :return: returns a Dataframe with the desired companies' information
+        """
         if tickers is None:
             tckrs = self.get_tickers()
         else:

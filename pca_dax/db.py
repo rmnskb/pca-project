@@ -3,13 +3,11 @@ import sqlite3
 import click
 from flask import current_app, g
 from pca_dax import data_handler as dh
+from pca_dax.common_variables import FIRST_DATE, DATE_FORMAT
 from datetime import datetime
 
-date_format = '%Y-%m-%d'
-FIRST_DATE = '2000-01-01'
 
-
-def get_db():
+def get_db() -> g.db:
     if 'db' not in g:
         g.db = sqlite3.connect(
             current_app.config['DATABASE']
@@ -28,11 +26,11 @@ def close_db(e=None):
         db.close()
 
 
-def create_connection(db='instance/pca_project.sqlite'):
+def create_connection(db='instance/pca_project.sqlite') -> sqlite3.connect:
     """
     Creates connection to sqlite database
     :param db: path to db instance
-    :return:
+    :return: a connection to the database
     """
     conn = None
 
@@ -44,32 +42,32 @@ def create_connection(db='instance/pca_project.sqlite'):
     return conn
 
 
-def insert_stocks_into_db(row, conn, cursor):
+def insert_stocks_into_db(row, conn, cursor) -> None:
     """
-    Inserts stocks data into database in a given format
-    :param row: row instance of pd.DataFrame
-    :param conn: sqlite's connection to a database
-    :param cursor: connection's cursor
-    :return:
+        Inserts stocks data into database in a given format
+        :param row: row instance of pd.DataFrame
+        :param conn: sqlite's connection to a database
+        :param cursor: connection's cursor
+        :return: void function
     """
     try:
         cursor.execute(
-            """INSERT INTO stocks (symbol, date, open, high, low, close, adj_close, volume)
+            """INSERT INTO stocks (date, symbol, open, high, low, close, adj_close, volume)
                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-            (row.Symbol, row.Date.date(), row.Open, row.High, row.Low, row.Close,
+            (row.Date.date(), row.Symbol, row.Open, row.High, row.Low, row.Close,
              row['Adj Close'], row.Volume)
         )
     except conn.IntegrityError:
         pass
 
 
-def insert_info_into_db(row, conn, cursor):
+def insert_info_into_db(row, conn, cursor) -> None:
     """
         Inserts info data into database in a given format
         :param row: row instance of pd.DataFrame
         :param conn: sqlite's connection to a database
         :param cursor: connection's cursor
-        :return:
+        :return: void function
     """
     try:
         cursor.execute(
@@ -82,18 +80,15 @@ def insert_info_into_db(row, conn, cursor):
         pass
 
 
-def init_db():
-    """
-    Gets the database connection and runs an .sql database initiation script
-    :return:
-    """
+def init_db() -> None:
+    """Gets the database connection and runs an .sql database initialisation script"""
     db = get_db()
 
     with current_app.open_resource('schema.sql') as f:
         db.executescript(f.read().decode('utf-8'))
 
 
-def populate_stocks():
+def populate_stocks() -> None:
     """Populates the stocks table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
@@ -108,7 +103,7 @@ def populate_stocks():
         conn.commit()
 
 
-def populate_info():
+def populate_info() -> None:
     """Populates the info table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
@@ -123,44 +118,7 @@ def populate_info():
         conn.commit()
 
 
-# def populate_db():
-#     with create_connection() as conn:
-#         c = conn.cursor()
-#
-#         data = dh.DataHandler(start_date=FIRST_DATE)
-#
-#         stocks_df = data.fetch_stocks_from_api()
-#
-#         for i, row in stocks_df.iterrows():
-#             try:
-#                 c.execute(
-#                     """INSERT INTO stocks (symbol, date, open, high, low, close, adj_close, volume)
-#                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-#                     (row.Symbol, row.Date.date(), row.Open, row.High, row.Low, row.Close,
-#                      row['Adj Close'], row.Volume)
-#                 )
-#             except conn.IntegrityError as e:
-#                 continue
-#
-#         conn.commit()
-#
-#         info_df = data.fetch_info_from_api()
-#
-#         for i, row in info_df.iterrows():
-#             try:
-#                 c.execute(
-#                     """INSERT INTO companies (symbol, name, exchange, industry, sector, market_cap, book_value, beta)
-#                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
-#                     (row.symbol, row.shortName, row.exchange, row.industry
-#                      , row.sector, row.marketCap, row.bookValue, row.beta)
-#                 )
-#
-#                 conn.commit()
-#             except conn.IntegrityError as e:
-#                 continue
-
-
-def update_db():
+def update_stocks() -> None:
     """Gets the latest date from the stocks table, fills in the missing dates"""
     with create_connection() as conn:
         c = conn.cursor()
@@ -172,7 +130,7 @@ def update_db():
             """
         ).fetchone()[0]
 
-        if datetime.strptime(max_date, date_format) < datetime.today():
+        if datetime.strptime(max_date, DATE_FORMAT) < datetime.today():
             data = dh.DataHandler(
                 start_date=max_date
             )
@@ -181,6 +139,36 @@ def update_db():
 
             for i, row in stocks_df.iterrows():
                 insert_stocks_into_db(row=row, conn=conn, cursor=c)
+
+            conn.commit()
+
+
+def update_info() -> None:
+    """Gets missing companies' data from the API and inserts it into the database"""
+    tickers = dh.DataHandler().get_tickers()
+
+    with create_connection() as conn:
+        c = conn.cursor()
+
+        c.execute(
+            """
+                SELECT DISTINCT symbol
+                FROM companies
+            """
+        )
+
+        symbols_in_db = set([row[0] for row in c.fetchall()])
+
+        missing_vals = tickers - symbols_in_db
+
+        if missing_vals:
+            data = dh.DataHandler(tickers=missing_vals)
+
+            info_df = data.fetch_info_from_api()
+
+            for i, row in info_df.iterrows():
+                insert_info_into_db(row=row, conn=conn, cursor=c)
+                # print(f'{row.symbol} was updated successfully')
 
             conn.commit()
 
@@ -194,15 +182,15 @@ def init_db_command():
 
 @click.command('populate-db')
 def populate_db_command():
-    # populate_db()
-    populate_stocks()
     populate_info()
+    populate_stocks()
     click.echo('The tables were populated successfully.')
 
 
 @click.command('update-db')
 def update_db_command():
-    update_db()
+    update_info()
+    update_stocks()
     click.echo('The database was updated successfully.')
 
 
