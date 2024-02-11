@@ -106,10 +106,10 @@ p, ol, ul, hr, span {
     border-right: 33px solid #618fbf;
 }
 
-/*.dash-radio-items {*/
-/*    list-style: none;*/
-/*    padding: 0;*/
-/*}*/
+.dash-radio-items {
+    list-style: none;
+    padding: 0;
+}
 
 .form-check-input {
     display: none;

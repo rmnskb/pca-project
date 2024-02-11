@@ -5,7 +5,7 @@ import yfinance as yf
 from datetime import datetime
 from pca_dax import yfinance_info as yfi
 from pca_dax import db
-from pca_dax.common_variables import FIRST_DATE, DATE_FORMAT
+from pca_dax.common import FIRST_DATE, DATE_FORMAT
 
 
 class DataHandler:

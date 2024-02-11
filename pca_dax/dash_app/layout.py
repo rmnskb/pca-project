@@ -2,7 +2,7 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 from pca_dax import data_handler as dh
 from datetime import datetime
-from pca_dax.common_variables import FIRST_DATE, DATE_FORMAT, COLORS, HOME_URL_BASE, DASH_URL_BASE, PCA_URL_BASE
+from pca_dax.common import FIRST_DATE, DATE_FORMAT, COLORS, HOME_URL_BASE, DASH_URL_BASE, PCA_URL_BASE, get_info_button
 
 
 def get_layout():
@@ -55,37 +55,30 @@ def get_layout():
         )
         , html.Hr(style={'color': COLORS['white']})
 
-
-        , dbc.Card(
-            dbc.CardBody([
-                dbc.Row([
-                    dbc.Col([
-                        html.Div([
-                            html.Label(
-                                'Pick a date range'
-                                , style={
-                                    'color': COLORS['hcolor']
-                                    , 'font-size': COLORS['font-size']
-                                }
-                            )
-                        ])
-                    ])
+        , dbc.Row([
+            dbc.Col([
+                html.Div([
+                    html.Label(
+                        'Pick a date range'
+                        , style={
+                            'color': COLORS['hcolor']
+                            , 'font-size': COLORS['font-size']
+                        }
+                    )
                 ])
-
-                , dbc.Row([
-                    dbc.Col([
-                        dcc.DatePickerRange(
-                            id='date-picker-range'
-                            , min_date_allowed=FIRST_DATE
-                            , max_date_allowed=datetime.today().strftime(DATE_FORMAT)
-                            , start_date=FIRST_DATE
-                            , end_date=datetime.today().strftime(DATE_FORMAT)
-                        )
-                    ])
-                ])
+                , dcc.DatePickerRange(
+                    id='date-picker-range'
+                    , min_date_allowed=FIRST_DATE
+                    , max_date_allowed=datetime.today().strftime(DATE_FORMAT)
+                    , start_date=FIRST_DATE
+                    , end_date=datetime.today().strftime(DATE_FORMAT)
+                )
             ])
-        , style={'width': '20rem'}
-        , className='m-2')
+        ]
+            , style={'width': '20rem'}
+            , className='m-2'
+        )
+
 
         , dbc.Row([
             dbc.Col([
@@ -100,12 +93,19 @@ def get_layout():
                                 }
                             )
 
+                            , get_info_button(
+                                button_id='candles-tooltip'
+                                , title='This graph shows candlestick chart of daily returns of a selected stock '
+                                        'over the chosen time period. The range below can be used to zoom into '
+                                        'particular time frame.'
+                            )
+
                             , dcc.Dropdown(
                                 id='symbol-dropdown'
                                 , options=[{'label': k, 'value': k} for k in list(tickers)]
                                 , value='SAP.DE'
                                 , placeholder='Select a symbol'
-                                , style={'width': '85%'}
+                                # , style={'width': '85%'}
                             )
 
                             , dcc.Graph(
@@ -114,7 +114,7 @@ def get_layout():
                             )
                         ])
                     ])
-                , className='m-2')
+                    , className='m-2')
             ], width={'size': 6})
 
             , dbc.Col([
@@ -129,11 +129,17 @@ def get_layout():
                                 }
                             )
 
+                            , get_info_button(
+                                button_id='sectors-tooltip'
+                                , title='This chart shows and compares mean daily returns of selected sectors '
+                                        'over the chosen time period'
+                            )
+
                             , dcc.Dropdown(
                                 id='sectors-dropdown'
                                 , options=[{'label': k, 'value': k} for k in list(sectors)]
                                 , value=['Financial Services']
-                                , style={'width': '85%'}
+                                # , style={'width': '85%'}
                                 , multi=True
                             )
 
@@ -142,7 +148,7 @@ def get_layout():
                             )
                         ])
                     ])
-                , className='m-2')
+                    , className='m-2')
             # ], width={'size': 5, 'offset': 1})
             ], width={'size': 6})
         ])
@@ -158,6 +164,14 @@ def get_layout():
                                     'color': COLORS['hcolor']
                                     , 'font-size': COLORS['font-size']
                                 }
+                            )
+
+                            , get_info_button(
+                                button_id='mean-var-tooltip'
+                                , title='These charts show the mean - variance distribution of selected stocks '
+                                        'over all time period. You can choose either daily or monthly returns '
+                                        'as a basis for the graph. When you hover over one of the stocks, '
+                                        'the graphs on the right will be updated accordingly. '
                             )
 
                             , dbc.RadioItems(
@@ -197,7 +211,7 @@ def get_layout():
                     ], width={'size': 4})
                 ])
             ])
-        , className='m-2')
+            , className='m-2')
     ], fluid=True, className='graph-container')
 
     return layout

@@ -3,7 +3,7 @@ from pca_dax import data_handler as dh
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
-from pca_dax.common_variables import FIRST_DATE, DATE_FORMAT, COLORS
+from pca_dax.common import FIRST_DATE, DATE_FORMAT, COLORS
 
 
 def get_date_mask(data, start_date, end_date):

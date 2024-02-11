@@ -3,11 +3,11 @@ import sqlite3
 import click
 from flask import current_app, g
 from pca_dax import data_handler as dh
-from pca_dax.common_variables import FIRST_DATE, DATE_FORMAT
+from pca_dax.common import FIRST_DATE, DATE_FORMAT
 from datetime import datetime
 
 
-def get_db() -> g.db:
+def get_db():
     if 'db' not in g:
         g.db = sqlite3.connect(
             current_app.config['DATABASE']

@@ -2,7 +2,7 @@ from dash import Input, Output
 from pca_dax import data_handler as dh
 import plotly.express as px
 import plotly.graph_objects as go
-from pca_dax.common_variables import COLORS
+from pca_dax.common import COLORS
 
 theme_template = go.Layout({
     'paper_bgcolor': COLORS['bgcolor']
