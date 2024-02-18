@@ -1,4 +1,4 @@
-from dash import dcc, html
+from dash import html
 
 
 HOME_URL_BASE = '/pca/home/'

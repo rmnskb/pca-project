@@ -1,3 +1,6 @@
+import urllib.request
+import zipfile
+import io
 import time
 import numpy as np
 import pandas as pd
@@ -6,6 +9,29 @@ from datetime import datetime
 from pca_dax import yfinance_info as yfi
 from pca_dax import db
 from pca_dax.common import FIRST_DATE, DATE_FORMAT
+
+
+def get_ff_factors():
+    url = 'https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/Europe_5_Factors_Daily_CSV.zip'
+
+    with urllib.request.urlopen(url) as response:
+        zip_data = response.read()
+
+    zip_input = io.BytesIO(zip_data)
+
+    with zipfile.ZipFile(zip_input, 'r') as zip_file:
+        with zip_file.open(zip_file.namelist()[0]) as csv_file:
+            ff_df = pd.read_csv(csv_file, skiprows=6, index_col=0)
+
+    ff_df.index = pd.to_datetime(
+        ff_df.index
+        , format='%Y%m%d'
+    )
+
+    # cut older data, missing values are replaced with Python-native solution
+    ff_df_cut = ff_df.loc[FIRST_DATE:].replace({-99.99: None})
+
+    return ff_df_cut
 
 
 class DataHandler:
@@ -147,7 +173,7 @@ class DataHandler:
 
         return self._companies_info
 
-    def preprocess(self) -> pd.DataFrame:
+    def preprocess(self, price_type='adj_close') -> pd.DataFrame:
         """
         Initialises the index as a datetime object,
         drops any stocks that have more than 1% of whole time window missing,
@@ -156,7 +182,7 @@ class DataHandler:
         :return: Returns a preprocessed pd.DataFrame object
         """
 
-        data = self.fetch_stocks_from_db(price_type='adj_close', wide_format=True)
+        data = self.fetch_stocks_from_db(price_type=price_type, wide_format=True)
 
         data.index = pd.to_datetime(data.index)
 
@@ -232,12 +258,13 @@ class PCA:
         else:
             self._data = data
 
-        self._tickers = data.columns
+        self._tickers = self._data.columns
         self._components = pd.DataFrame([])
         self._eigenvalues = None
         self._explained_variance = None
         self._loadings_sectors = pd.DataFrame([])
         self._transposed_loadings = pd.DataFrame([])
+        self._factors = pd.DataFrame({})
 
     def fit(self, cov_base: bool = False, n_comp: int = 10) -> pd.DataFrame:
         """
@@ -324,3 +351,10 @@ class PCA:
         )
 
         return self._transposed_loadings
+
+    def transform(self, cov_base: bool = False, n_comp: int = 10):
+        loadings = self.fit(cov_base=cov_base, n_comp=n_comp)
+
+        self._factors = self._data.dot(loadings)
+
+        return self._factors
