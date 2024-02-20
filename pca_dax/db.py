@@ -88,12 +88,12 @@ def init_db() -> None:
         db.executescript(f.read().decode('utf-8'))
 
 
-def populate_stocks() -> None:
+def populate_stocks(index: str) -> None:
     """Populates the stocks table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
 
-        data = dh.DataHandler(start_date=FIRST_DATE)
+        data = dh.DataHandler(index=index, start_date=FIRST_DATE)
 
         stocks_df = data.fetch_stocks_from_api()
 
@@ -103,12 +103,12 @@ def populate_stocks() -> None:
         conn.commit()
 
 
-def populate_info() -> None:
+def populate_info(index: str) -> None:
     """Populates the info table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
 
-        data = dh.DataHandler()
+        data = dh.DataHandler(index=index)
 
         info_df = data.fetch_info_from_api()
 
@@ -118,7 +118,7 @@ def populate_info() -> None:
         conn.commit()
 
 
-def update_stocks() -> None:
+def update_stocks(index: str) -> None:
     """Gets the latest date from the stocks table, fills in the missing dates"""
     with create_connection() as conn:
         c = conn.cursor()
@@ -132,7 +132,8 @@ def update_stocks() -> None:
 
         if datetime.strptime(max_date, DATE_FORMAT) < datetime.today():
             data = dh.DataHandler(
-                start_date=max_date
+                index=index
+                , start_date=max_date
             )
 
             stocks_df = data.fetch_stocks_from_api()
@@ -143,9 +144,9 @@ def update_stocks() -> None:
             conn.commit()
 
 
-def update_info() -> None:
+def update_info(index: str) -> None:
     """Gets missing companies' data from the API and inserts it into the database"""
-    tickers = dh.DataHandler().get_tickers()
+    tickers = dh.DataHandler(index=index).get_tickers()
 
     with create_connection() as conn:
         c = conn.cursor()
@@ -181,16 +182,20 @@ def init_db_command():
 
 
 @click.command('populate-db')
-def populate_db_command():
-    populate_info()
-    populate_stocks()
+@click.argument('index')
+def populate_db_command(index):
+    populate_info(index)
+    click.echo(f'Finish populating reference table for index {index}')
+    populate_stocks(index)
     click.echo('The tables were populated successfully.')
 
 
 @click.command('update-db')
-def update_db_command():
-    update_info()
-    update_stocks()
+@click.argument('index')
+def update_db_command(index):
+    update_info(index)
+    click.echo(f'Finish updating reference table for index {index}')
+    update_stocks(index)
     click.echo('The database was updated successfully.')
 
 

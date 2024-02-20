@@ -1,5 +1,23 @@
 import requests
 import urllib
+from ratelimiter import RateLimiter
+
+
+@RateLimiter(max_calls=1, period=1)
+def get_ticker(company_name):
+    yfinance = 'https://query2.finance.yahoo.com/v1/finance/search'
+    user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
+    params = {
+        'q': company_name
+        , 'quotes_count': 1
+        , 'country': 'United States'
+    }
+
+    res = requests.get(url=yfinance, params=params, headers={'User-Agent': user_agent})
+    try:
+        return res.json()['quotes'][0]['symbol']
+    except (IndexError, KeyError) as e:
+        return None
 
 
 class Ticker:
@@ -48,8 +66,9 @@ class Ticker:
         return crumb
 
     @property
+    @RateLimiter(max_calls=1, period=1)
     def info(self):
-        # Yahoo modules doc informations :
+        # Yahoo modules doc information:
         # https://cryptocointracker.com/yahoo-finance/yahoo-finance-api
         cookie = self._get_yahoo_cookie()
         crumb = self._get_yahoo_crumb(cookie)

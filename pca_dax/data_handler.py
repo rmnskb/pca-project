@@ -35,8 +35,9 @@ def get_ff_factors():
 
 
 class DataHandler:
-    def __init__(self, tickers=None, start_date=FIRST_DATE, end_date=None):
+    def __init__(self, index: str = 'DAX', tickers=None, start_date=FIRST_DATE, end_date=None):
         # Variables initiation
+        self._index = index
         self._tickers = tickers
         self._start_date = start_date
         self._end_date = end_date
@@ -45,6 +46,10 @@ class DataHandler:
         self._mth_chg = pd.DataFrame({})
         self._companies_info = pd.DataFrame({})
         self._mean_std = pd.DataFrame({})
+        self._stoxx_info = pd.DataFrame({})
+
+    # make the class check the database first for the tickers, instead of doing API calls
+    # def _check_info_in_db(self, company_list: list[str]):
 
     def get_tickers(self) -> set[str]:
         """
@@ -52,7 +57,7 @@ class DataHandler:
         :return: the list of all actual constituents of 3 indices
         """
         # TODO: add a possibility to choose from multiple indices
-        if self._tickers is None:
+        if self._tickers is None and self._index == 'DAX':
             dax = pd.read_html(
                 'https://en.wikipedia.org/wiki/DAX'
                 , attrs={'id': 'constituents'}
@@ -71,6 +76,26 @@ class DataHandler:
             # iterates through the lists of tickers, checks if they have the suffix,
             # adds if they don't, leaves only the unique tickers eventually
             self._tickers = set([x + '.DE' if '.DE' not in x else x for x in sum([dax, mdax, sdax], [])])
+
+        elif self._tickers is None and self._index == 'STOXX':
+            stoxx_df = pd.read_html(
+                'https://qontigo.com/index/sxxgv/?components=true'
+            )[0]
+
+            stoxx_df['Company'] = (
+                stoxx_df['Company']
+                .str
+                .replace(' HLDG', '')
+                .str
+                .replace(' GRP', '')
+                .apply(lambda x: ' '.join([w for w in x.split() if len(w) > 1]))
+            )
+
+            stoxx_df['symbol'] = stoxx_df['Company'].apply(lambda x: yfi.get_ticker(company_name=x))
+
+            self._stoxx_info = stoxx_df
+
+            self._tickers = set(stoxx_df['symbol'].to_list())
 
         return self._tickers
 
@@ -110,7 +135,7 @@ class DataHandler:
                 pass
 
             # TODO: handle the requests in better fashion
-            time.sleep(3)
+            # time.sleep(3)
 
         self._companies_info = pd.DataFrame(results)
 
