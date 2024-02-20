@@ -9,7 +9,8 @@ CREATE TABLE companies (
     sector VARCHAR,
     market_cap INTEGER,
     book_value DECIMAL(18, 6),
-    beta DECIMAL
+    beta DECIMAL,
+    stock_index VARCHAR
 );
 
 CREATE TABLE stocks (

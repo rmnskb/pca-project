@@ -71,10 +71,11 @@ def insert_info_into_db(row, conn, cursor) -> None:
     """
     try:
         cursor.execute(
-            """INSERT INTO companies (symbol, name, exchange, industry, sector, market_cap, book_value, beta)
+            """INSERT INTO companies 
+            (symbol, name, exchange, industry, sector, market_cap, book_value, beta, stock_index)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (row.symbol, row.shortName, row.exchange, row.industry
-             , row.sector, row.marketCap, row.bookValue, row.beta)
+             , row.sector, row.marketCap, row.bookValue, row.beta, row.stock_index)
         )
     except conn.IntegrityError as e:
         pass
@@ -88,7 +89,7 @@ def init_db() -> None:
         db.executescript(f.read().decode('utf-8'))
 
 
-def populate_stocks(index: str) -> None:
+def populate_stocks(index: str = 'DAX') -> None:
     """Populates the stocks table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
@@ -103,7 +104,7 @@ def populate_stocks(index: str) -> None:
         conn.commit()
 
 
-def populate_info(index: str) -> None:
+def populate_info(index: str = 'DAX') -> None:
     """Populates the info table with the data from Yahoo! API"""
     with create_connection() as conn:
         c = conn.cursor()
@@ -114,11 +115,12 @@ def populate_info(index: str) -> None:
 
         for i, row in info_df.iterrows():
             insert_info_into_db(row=row, conn=conn, cursor=c)
+            print(f'{row.symbol} was added')
 
         conn.commit()
 
 
-def update_stocks(index: str) -> None:
+def update_stocks(index: str = 'DAX') -> None:
     """Gets the latest date from the stocks table, fills in the missing dates"""
     with create_connection() as conn:
         c = conn.cursor()
@@ -144,7 +146,7 @@ def update_stocks(index: str) -> None:
             conn.commit()
 
 
-def update_info(index: str) -> None:
+def update_info(index: str = 'DAX') -> None:
     """Gets missing companies' data from the API and inserts it into the database"""
     tickers = dh.DataHandler(index=index).get_tickers()
 
@@ -184,18 +186,20 @@ def init_db_command():
 @click.command('populate-db')
 @click.argument('index')
 def populate_db_command(index):
-    populate_info(index)
+    click.echo(f'Choose index {index}')
+    populate_info(index=index)
     click.echo(f'Finish populating reference table for index {index}')
-    populate_stocks(index)
+    populate_stocks(index=index)
     click.echo('The tables were populated successfully.')
 
 
 @click.command('update-db')
 @click.argument('index')
 def update_db_command(index):
-    update_info(index)
-    click.echo(f'Finish updating reference table for index {index}')
-    update_stocks(index)
+    click.echo(f'Choose index {index}')
+    update_info(index=index)
+    click.echo(f'Finish updating reference table.')
+    update_stocks(index=index)
     click.echo('The database was updated successfully.')
 
 

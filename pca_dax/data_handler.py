@@ -49,15 +49,36 @@ class DataHandler:
         self._stoxx_info = pd.DataFrame({})
 
     # make the class check the database first for the tickers, instead of doing API calls
-    # def _check_info_in_db(self, company_list: list[str]):
+    def _is_index_in_db(self):
+        with db.create_connection() as conn:
+            c = conn.cursor()
 
-    def get_tickers(self) -> set[str]:
-        """
-        Scrapes the constituents of 3 different size DAX indices, then adds country suffix
-        :return: the list of all actual constituents of 3 indices
-        """
-        # TODO: add a possibility to choose from multiple indices
-        if self._tickers is None and self._index == 'DAX':
+            c.execute(
+                f"""
+                    SELECT DISTINCT stock_index
+                    FROM companies
+                    WHERE stock_index = '{self._index}'
+                """
+            )
+
+            return bool(c.fetchone())
+
+    def _get_constituents_from_db(self):
+        with db.create_connection() as conn:
+            c = conn.cursor()
+
+            c.execute(
+                f"""
+                    SELECT DISTINCT symbol
+                    FROM companies
+                    WHERE stock_index = '{self._index}'
+                """
+            )
+
+            return set([row[0] for row in c.fetchall()])
+
+    def _scrape_constituents(self):
+        if self._index == 'DAX':
             dax = pd.read_html(
                 'https://en.wikipedia.org/wiki/DAX'
                 , attrs={'id': 'constituents'}
@@ -75,9 +96,9 @@ class DataHandler:
 
             # iterates through the lists of tickers, checks if they have the suffix,
             # adds if they don't, leaves only the unique tickers eventually
-            self._tickers = set([x + '.DE' if '.DE' not in x else x for x in sum([dax, mdax, sdax], [])])
+            return set([x + '.DE' if '.DE' not in x else x for x in sum([dax, mdax, sdax], [])])
 
-        elif self._tickers is None and self._index == 'STOXX':
+        elif self._index == 'STOXX':
             stoxx_df = pd.read_html(
                 'https://qontigo.com/index/sxxgv/?components=true'
             )[0]
@@ -93,9 +114,21 @@ class DataHandler:
 
             stoxx_df['symbol'] = stoxx_df['Company'].apply(lambda x: yfi.get_ticker(company_name=x))
 
-            self._stoxx_info = stoxx_df
+            return set(stoxx_df['symbol'].to_list())
 
-            self._tickers = set(stoxx_df['symbol'].to_list())
+        else:
+            raise ValueError("The index argument should be either 'DAX' or 'STOXX'")
+
+    def get_tickers(self) -> set[str]:
+        """
+        Scrapes the constituents of 3 different size DAX indices, then adds country suffix
+        :return: the list of all actual constituents of 3 indices
+        """
+        if not self._tickers and self._index:
+            if self._is_index_in_db():
+                self._tickers = self._get_constituents_from_db()
+            else:
+                self._tickers = self._scrape_constituents()
 
         return self._tickers
 
@@ -138,6 +171,7 @@ class DataHandler:
             # time.sleep(3)
 
         self._companies_info = pd.DataFrame(results)
+        self._companies_info['stock_index'] = self._index
 
         return self._companies_info
 
