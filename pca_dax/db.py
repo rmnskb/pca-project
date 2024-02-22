@@ -73,7 +73,7 @@ def insert_info_into_db(row, conn, cursor) -> None:
         cursor.execute(
             """INSERT INTO companies 
             (symbol, name, exchange, industry, sector, market_cap, book_value, beta, stock_index)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (row.symbol, row.shortName, row.exchange, row.industry
              , row.sector, row.marketCap, row.bookValue, row.beta, row.stock_index)
         )

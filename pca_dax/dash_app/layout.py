@@ -2,7 +2,16 @@ from dash import dcc, html
 import dash_bootstrap_components as dbc
 from pca_dax import data_handler as dh
 from datetime import datetime
-from pca_dax.common import FIRST_DATE, DATE_FORMAT, COLORS, HOME_URL_BASE, DASH_URL_BASE, PCA_URL_BASE, get_info_button
+from pca_dax.common import (
+    FIRST_DATE
+    , DATE_FORMAT
+    , COLORS
+    , HOME_URL_BASE
+    , PCA_URL_BASE
+    , get_info_button
+    , get_header
+    , get_footer
+)
 
 
 def get_layout():
@@ -10,50 +19,8 @@ def get_layout():
     tickers = data.get_tickers()
     sectors = data.fetch_info_from_db()['sector'].unique().tolist()
 
-    # navbar = dbc.Navbar(children=[
-    #     dbc.Container([
-    #         dbc.Row([
-    #             html.H1([
-    #                 dbc.Col([
-    #                     html.Span('Risk Sources with PCA', style={'color': COLORS['white']})
-    #                 ], width={'size': 3})
-    #                 , dbc.Col([
-    #                     html.A('Home', href='/', style={'color': COLORS['white']})
-    #                 ], width={'size': 3})
-    #                 , dbc.Col([
-    #                     html.Span('EDA', style={'color': COLORS['hcolor']}, className='nav-link active')
-    #                 ], width={'size': 3})
-    #                 , dbc.Col([
-    #                     html.A('PCA', href='/pca_app/', style={'color': COLORS['white']}, className='nav-link')
-    #                 ], width={'size': 3})
-    #             ])
-    #         ], style={"textDecoration": "none"})
-    #     ])
-    # ], color='dark', class_name='navbar navbar-expand-lg bg-primary')
-
     layout = dbc.Container([
-        html.H1([
-            html.Span('Risk Sources with PCA', style={'color': COLORS['white']})
-            , html.Span(' | ', style={'color': COLORS['white']})
-            , html.A(
-                'Home'
-                , href=HOME_URL_BASE
-                , style={'color': COLORS['white'], 'display': 'inline'}, className='m-1 nav-link'
-            )
-            , html.A('Data', style={
-                'color': COLORS['hcolor'], 'display': 'inline'
-            }, className='m-1 nav-link active')
-            , html.A(
-                'PCA'
-                , href=PCA_URL_BASE
-                , style={'color': COLORS['white'], 'display': 'inline'}, className='m-1 nav-link'
-            )
-            ]
-            , style={
-                'font-size': '280%'
-            }
-        )
-        , html.Hr(style={'color': COLORS['white']})
+        get_header(pca_active=False)
 
         , dbc.Row([
             dbc.Col([
@@ -212,6 +179,8 @@ def get_layout():
                 ])
             ])
             , className='m-2')
+
+        , get_footer()
     ], fluid=True, className='graph-container')
 
     return layout

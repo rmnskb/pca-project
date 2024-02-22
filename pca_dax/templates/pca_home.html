@@ -2,19 +2,28 @@
 <title> {% block title %}{% endblock %} PCA Project - Home </title>
 <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.css">
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://kit.fontawesome.com/cb92e4946f.js" crossorigin="anonymous"></script>
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon-16x16.png') }}">
+<link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+<header>
+    <nav style="text-align: center">
+        <h1 style="font-size: 200%">
+            <span> Risk Sources with PCA </span>
+            <span>  |  </span>
+            <a style="color: #e3e5b1; display: inline" class="nav-link"> Home </a>
+            <a href="/dash/" style="color: white; display: inline" class="nav-link"> EDA </a>
+            <a href="/pca/" style="color: white; display: inline" class="nav-link active"> PCA </a>
+            <a href="https://github.com/rmnskb/pca-project" style="color: white; margin-left: 3px">
+                <i class="fa-brands fa-github me-3 fa-1x"></i>
+            </a>
+        </h1>
+        <hr>
+    </nav>
+</header>
 <body>
     <div class="container-fluid">
-        <nav style="background-color: #272a2d">
-            <h1 style="font-size: 280%">
-                <span> Risk Sources with PCA </span>
-                <span>  |  </span>
-                <a style="color: #e3e5b1; display: inline" class="m-1 nav-link"> Home </a>
-                <a href="/pca/dash/" style="color: white; display: inline" class="m-1 nav-link"> Data </a>
-                <a href="/pca/app/" style="color: white; display: inline" class="m-1 nav-link active"> PCA </a>
-            </h1>
-            <hr>
-        </nav>
-
         <h2>Identifying Risk Sources with Principal Component Analysis</h2>
         <p>The aim of this app is to look into how Principal Component Analysis can be employed to identify uncorrelated risk sources for leveraging in stock markets.</p>
         <h3>The app tries to answer following questions: </h3>
@@ -71,3 +80,9 @@
         </ul>
     </div>
 </body>
+<footer>
+    <hr>
+    <div style="text-align: center">
+        <p>Created with Python, Flask and Plotly by Bogdan Romenskii, 2024</p>
+    </div>
+</footer>

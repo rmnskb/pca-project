@@ -1,55 +1,18 @@
 from dash import dcc, html
 import dash_bootstrap_components as dbc
-from pca_dax.common import COLORS, HOME_URL_BASE, DASH_URL_BASE, PCA_URL_BASE, get_info_button
+from pca_dax.common import (
+    FIRST_DATE
+    , DATE_FORMAT
+    , COLORS
+    , get_info_button
+    , get_header
+    , get_footer
+)
 
 
 def get_layout():
-    # nav = dbc.Nav([
-    #     # dbc.NavbarBrand('Risk Sources with PCA |')
-    #     html.Span('Risk Sources with PCA', style={'color': COLORS['white'], 'font-size': '175%'}, className='m-1')
-    #     # , dbc.NavItem(
-    #     , html.A('Home'
-    #        , href=HOME_URL_BASE
-    #        , style={'color': COLORS['white']}, className='m-1 nav-link'
-    #     )
-    #     # )
-    #     , dbc.NavItem(
-    #         html.A('Data'
-    #                , href=DASH_URL_BASE
-    #                , style={'color': COLORS['white']}, className='m-1 nav-link'
-    #                )
-    #     )
-    #     , dbc.NavItem(
-    #         html.A('PCA'
-    #                , href=PCA_URL_BASE
-    #                , style={'color': COLORS['hcolor']}
-    #                , className='m-1 nav-link')
-    #     )
-    # ])
-
     layout = dbc.Container([
-        # nav
-        html.H1([
-            html.Span('Risk Sources with PCA', style={'color': COLORS['white']})
-            , html.Span(' | ', style={'color': COLORS['white']})
-            , html.A(
-                'Home'
-                , href=HOME_URL_BASE
-                , style={'color': COLORS['white'], 'display': 'inline'}, className='m-1 nav-link'
-            )
-            , html.A('Data', href=DASH_URL_BASE, style={
-                'color': COLORS['white'], 'display': 'inline'
-            }, className='m-1 nav-link active')
-            , html.A(
-                'PCA'
-                , style={'color': COLORS['hcolor'], 'display': 'inline'}, className='m-1 nav-link'
-            )
-        ]
-            , style={
-                'font-size': '280%'
-            }
-        )
-        , html.Hr(style={'color': COLORS['white']})
+        get_header(pca_active=True)
 
         , dbc.Row([
             dbc.Col([
@@ -132,7 +95,7 @@ def get_layout():
                             )
                         ])
                     ])
-                , className='m-2')
+                    , className='m-2')
             ], width={'size': 6})
         ])
 
@@ -185,13 +148,25 @@ def get_layout():
                             )
 
                             , html.P(
-                                "In the very first graph you can see..."
+                                "From all three graphs one can see how different are  "
+                                "covariance and correlation matrices once it comes "
+                                "to constructing principal components. "
+                                "The covariance matrix approach clearly favours "
+                                "the equities with the biggest variance, which makes sense, since "
+                                "the process does not undergo the normalisation step. "
+                                "The third graph shows how the first component more or less resembles "
+                                "the 1/N portfolio with all the weights being almost equal. "
+                                "Second component generally goes short on healthcare and technology sectors, "
+                                "giving them negative loadings. Similar explanations can be found for higher order "
+                                "components as well, albeit the loadings get less consistent with growing order. "
                             )
                         ])
                     ])
                 ], className='m-2')
             ], width={'size': 6})
         ])
+
+        , get_footer()
     ], fluid=True)
 
     return layout

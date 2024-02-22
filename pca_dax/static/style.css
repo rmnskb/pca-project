@@ -9,6 +9,10 @@ p, ol, ul, hr, span {
     color: white;
 }
 
+h2, h3 {
+    color: #d3d3d3
+}
+
 .nav{
     font-size: 150%;
     background-color: #272a2d;

@@ -49,14 +49,14 @@ def register_dashapps(app):
         __name__
         , server=app
         , url_base_pathname=DASH_URL_BASE
-        , external_stylesheets=[dbc.themes.LUX, '/static/style.css']
+        , external_stylesheets=[dbc.themes.LUX, dbc.icons.FONT_AWESOME, '/static/style.css']
     )
 
     pcapage = Dash(
         __name__
         , server=app
         , url_base_pathname=PCA_URL_BASE
-        , external_stylesheets=[dbc.themes.LUX, '/static/style.css']
+        , external_stylesheets=[dbc.themes.LUX, dbc.icons.FONT_AWESOME, '/static/style.css']
     )
 
     with app.app_context():
