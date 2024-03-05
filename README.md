@@ -1,5 +1,5 @@
-# Identifying Risk Sources with Principal Component Analysis
-The aim of this project is to look into how Principal Component Analysis can be employed to identify uncorrelated risk sources for leveraging in stock markets.
+# Identifying Risk Sources on Equity Markets using Principal Component Analysis
+The aim of this project is to look into how Principal Component Analysis can be employed to identify uncorrelated risk sources for leveraging in stock markets. The project was created as a supplement for the thesis research with the same name, it provides useful functions for standardizing and automating data extraction and processing, and storing the raw data in a database for quicker access.
 The project tries to answer following questions:
 * What is difference between using correlation and covariance matrix as an underlying foundation of PCA?
 * What can be the possible interpretation of first N principal components? How are they different?
