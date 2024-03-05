@@ -3,4 +3,4 @@
 /.ipynb_checkpoints/
 /.idea/
 *.pyc
-*.ipynb
+jupyter.ipynb

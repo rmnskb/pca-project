@@ -248,7 +248,7 @@ class DataHandler:
         if isinstance(data, pd.DataFrame):
             data = data.dropna(
                 axis=1
-                , thresh=int(0.9*len(data))
+                , thresh=int(0.99*len(data))
             )
         elif isinstance(data, pd.Series):
             data = data.dropna()
