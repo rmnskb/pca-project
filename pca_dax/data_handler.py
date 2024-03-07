@@ -103,6 +103,7 @@ class DataHandler:
                 'https://qontigo.com/index/sxxgv/?components=true'
             )[0]
 
+            # Clean the data from the most common abbreviations
             stoxx_df['Company'] = (
                 stoxx_df['Company']
                 .str
