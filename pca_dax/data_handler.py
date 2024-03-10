@@ -357,7 +357,7 @@ class PCA:
             , index=self._tickers
         )
 
-        self._explained_variance = eigvls[:n_comp] / eigvls.sum()
+        self._explained_variance = sorted_eigvls[:n_comp] / sorted_eigvls[:n_comp].sum()
         self._eigenvalues = sorted_eigvls
 
         return self._components
