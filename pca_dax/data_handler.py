@@ -313,6 +313,7 @@ class DataHandler:
 
 class PCA:
     def __init__(self, data: pd.DataFrame = None):
+        # TODO: add a possibility to handle the different number of components in different methods
         if data is None:
             self._data = DataHandler().create_daily_change()
         else:

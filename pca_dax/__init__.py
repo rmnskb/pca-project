@@ -10,7 +10,6 @@ from pca_dax.common import HOME_URL_BASE, DASH_URL_BASE, PCA_URL_BASE
 # app factory
 def create_app(test_config=None) -> flask.Flask:
     # TODO: cover the tests
-    # TODO: add images to the front page and favicons
     # TODO: add descriptions to the graphs
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
